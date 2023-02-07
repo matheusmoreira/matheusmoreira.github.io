@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="referrer" content="no-referrer" />
+    <title>Linux system calls</title>
+    <meta name="author" content="Matheus Afonso Martins Moreira" />
+    <meta name="description" content="Everything I know about Linux system calls." />
+    <meta name="keywords" content="linux, system call, syscall" />
+  </head>
+  <body>
+    <main>
+      <article>
+        <h1>Linux system calls</h1>
+        <p>
+          Programs usually interface with the kernel through libraries
+          provided by the operating system, most commonly <code>libc</code>,
+          Through these libraries, they have access to system functions.
+          <abbr>POSIX</abbr>-compliant operating systems provide
+          <code>read</code>, <code>write</code> and numerous others.
+          Windows has the Win32 API and its many DLLs and functions.
+        </p>
+        <p>
+          These operating systems consist of strongly connected
+          kernel and user space components, developed and distributed
+          as one unit. The user space libraries are the only supported
+          means of using the system. User space programs are not meant
+          to talk to the kernel directly, they're meant to use the
+          provided system libraries. This forces them to depend on and
+          link against such libraries.
+        </p>
+        <p>
+          While it is often possible to interface with the kernel
+          directly, the kernel interface is unstable and subject
+          to change. Software that insists on using that interface
+          might simply stop working if or rather <em>when</em>
+          it changes.
+        </p>
+
+        <figure>
+          <blockquote cite="https://news.ycombinator.com/item?id=28413001">
+            Then there's the whole "reinventing libc" insanity,
+            even on macOS (where no such ABI stability was guaranteed,
+            but they did it anyway, and that ended up with a macOS
+            update breaking all Go apps).
+            On Windows they can't get away with that,
+            so they use Cgo instead
+          </blockquote>
+          <figcaption>
+            <cite>
+              <a href="https://news.ycombinator.com/item?id=28413001">
+                marcan_42, Hacker News,
+                <time datetime="2021-09-04">Sept 4, 2021</time>
+              </a>
+            </cite>
+          </figcaption>
+        </figure>
+
+        <figure>
+          <blockquote cite="https://github.com/golang/go/issues/17490">
+            As I understand it, Go currently has its own syscall
+            wrappers for Darwin. This is explicitly against what
+            Apple recommends, precisely because they're not willing
+            to commit to a particular syscall ABI.
+            This leads to issues like <a href="https://github.com/golang/go/issues/16570">#16570</a>,
+            and although we've been lucky in that things have
+            generally been backward-compatible so far, there's no
+            guarantee that it'll continue to happen. It doesn't seem
+            inconceivable to me that we'd at some point end up having
+            to specify "build for macOS 10.13+" vs. "build for 10.12
+            and below", for example.
+          </blockquote>
+          <figcaption>
+            <cite>
+              <a href="https://github.com/golang/go/issues/17490">
+                copumpkin, golang/go GitHub issue #17490,
+                <time datetime="2016-10-17">Oct 17, 2016</time>
+              </a>
+            </cite>
+          </figcaption>
+        </figure>
+
+        <h2>Linux is different</h2>
+        <p>
+          One of the things that make the Linux kernel interesting
+          is the fact it has a stable kernel-userspace interface.
+          Unlike virtually every other kernel and operating system,
+          Linux guarantees stability at the binary interface level.
+        </p>
+
+        <figure>
+          <blockquote cite="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/stable/syscalls">
+            This interface matches much of the POSIX interface
+            and is based on it and other Unix based interfaces.
+            It will only be added to over time,
+            and not have things removed from it.
+          </blockquote>
+          <figcaption>
+            <cite>
+              <a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/stable/syscalls">
+                torvalds/linux,
+                Documentation/ABI/stable/syscalls,
+                <time datetime="2006-06-21">2006-06-21</time>
+              </a>
+            </cite>
+          </figcaption>
+        </figure>
+
+        <p>
+          This is rooted in the fact Linux is a <em>kernel</em>,
+          not a complete operating system as traditionally defined.
+          As an independent component, it <em>must</em> have a stable
+          interface to user space software if anything is to be built
+          upon it.
+        </p>
+        <p>
+          While many people argue that Linux is not an operating system,
+          there's no question that Linux is a <em>platform</em> and that
+          it is possible to safely build directly upon it. There is no
+          actual <em>need</em> to depend on anything else.
+          Not even <code>libc</code>.
+        </p>
+      </article>
+    </main>
+  </body>
+</html>
