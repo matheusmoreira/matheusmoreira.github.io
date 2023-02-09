@@ -80,6 +80,49 @@
           </figcaption>
         </figure>
 
+        <p>
+          Sometimes it's not even possible to use system calls at all.
+          OpenBSD has implemented <a href="https://lwn.net/Articles/806776/">
+          system call origin verification</a>, a security mechanism that
+          only allows system calls originating from the system's <code>libc</code>.
+          So not only is the kernel ABI unstable, normal programs are not even allowed
+          to interface with the kernel at all.
+        </p>
+
+        <figure>
+          <blockquote cite="https://lwn.net/Articles/806776/">
+            The eventual goal would be to disallow system calls from anywhere
+            but the region mapped for libc, but the Go language port for OpenBSD
+            currently makes system calls directly.
+          </blockquote>
+          <blockquote cite="https://lwn.net/Articles/806776/">
+            Switching Go to use the libc wrappers (as is already done
+            on Solaris and macOS) is something that De Raadt would like to see.
+            It may allow dropping the main program text segment from the list of valid regions in the future:
+          </blockquote>
+          <blockquote cite="https://lwn.net/Articles/806776/">
+            It is an ABI break for the operating system, but that is no big deal for OpenBSD.
+            De Raadt <a href="https://lwn.net/Articles/806869/">said</a>:
+            <q cite="https://lwn.net/Articles/806869/">we here at OpenBSD are the kings of ABI-instability</q>.
+            He <a href="https://lwn.net/Articles/806870/">suggested</a> that relying on the OpenBSD ABI
+            is fraught with peril:
+
+            <blockquote cite="https://lwn.net/Articles/806870/">
+              Program to the API rather than the ABI. When we see benefits, we change the ABI
+              more often than the API.
+              I have altered the ABI. Pray I do not alter it further.
+            </blockquote>
+          </blockquote>
+          <figcaption>
+            <cite>
+              <a href="https://lwn.net/Articles/806776/">
+                Jake Edge, OpenBSD system-call-origin verification, LWN,
+                <time datetime="2019-12-11">December 11, 2019</time>
+              </a>
+            </cite>
+          </figcaption>
+        </figure>
+
         <h2>Linux is different</h2>
         <p>
           One of the things that make the Linux kernel interesting
