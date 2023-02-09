@@ -1,0 +1,153 @@
+doctype html
+html(lang='en-US')
+  head
+    meta(charset='utf-8')
+    meta(name='referrer' content='no-referrer')
+    title Linux system calls
+    meta(name='author' content='Matheus Afonso Martins Moreira')
+    meta(name='description' content='Everything I know about Linux system calls.')
+    meta(name='keywords' content='linux, system call, syscall')
+  body
+    main
+      article
+        h1 Linux system calls
+        p
+          | Programs usually interface with the kernel through libraries provided by the operating system, most commonly 
+          code libc
+          | , Through these libraries, they have access to system functions. 
+          abbr POSIX
+          | -compliant operating systems provide 
+          code read
+          | , 
+          code write
+          |  and numerous others. Windows has the Win32 API and its many DLLs and functions.
+
+        p.
+          These operating systems consist of strongly connected kernel
+          and user space components, developed and distributed as one
+          unit. The user space libraries are the only supported means
+          of using the system. User space programs are not meant to
+          talk to the kernel directly, they're meant to use the provided
+          system libraries. This forces them to depend on and link
+          against such libraries.
+
+        p
+          | While it is often possible to interface with the kernel
+          | directly, the kernel interface is unstable and subject to
+          | change. Software that insists on using that interface
+          | might simply stop working if or rather 
+          em when
+          |  it changes.
+
+        figure
+          blockquote(cite='https://news.ycombinator.com/item?id=28413001').
+            Then there's the whole "reinventing libc" insanity,
+            even on macOS (where no such ABI stability was guaranteed,
+            but they did it anyway, and that ended up with a macOS
+            update breaking all Go apps). On Windows they can't get away
+            with that, so they use Cgo instead
+          figcaption
+            cite
+              a(href='https://news.ycombinator.com/item?id=28413001')
+                | marcan_42, Hacker News, 
+                time(datetime='2021-09-04') Sept 4, 2021
+
+        figure
+          blockquote(cite='https://github.com/golang/go/issues/17490')
+            | As I understand it, Go currently has its own syscall
+            | wrappers for Darwin. This is explicitly against what
+            | Apple recommends, precisely because they're not willing
+            | to commit to a particular syscall ABI. This leads to
+            | issues like 
+            a(href='https://github.com/golang/go/issues/16570') #16570
+            | , and although we've been lucky in that things have
+            | generally been backward-compatible so far, there's no
+            | guarantee that it'll continue to happen.
+            | It doesn't seem inconceivable to me that we'd at some
+            | point end up having to specify "build for macOS 10.13+"
+            | vs. "build for 10.12 and below", for example.
+          figcaption
+            cite
+              a(href='https://github.com/golang/go/issues/17490')
+                | copumpkin, golang/go GitHub issue #17490, 
+                time(datetime='2016-10-17') Oct 17, 2016
+
+        p
+          | Sometimes it's not even possible to use system calls at all.
+          | OpenBSD has implemented 
+          a(href='https://lwn.net/Articles/806776/') system call origin verification
+          | , a security mechanism that only allows system calls
+          | originating from the system's 
+          code libc
+          | . So not only is the kernel ABI unstable, normal programs
+          | are not even allowed to interface with the kernel at all.
+
+        figure
+          blockquote(cite='https://lwn.net/Articles/806776/').
+            The eventual goal would be to disallow system calls
+            from anywhere but the region mapped for libc,
+            but the Go language port for OpenBSD currently makes
+            system calls directly.
+          blockquote(cite='https://lwn.net/Articles/806776/').
+            Switching Go to use the libc wrappers (as is already done
+            on Solaris and macOS) is something that De Raadt would like
+            to see. It may allow dropping the main program text segment
+            from the list of valid regions in the future:
+          blockquote(cite='https://lwn.net/Articles/806776/')
+            | It is an ABI break for the operating system,
+            | but that is no big deal for OpenBSD. De Raadt 
+            a(href='https://lwn.net/Articles/806869/') said
+            | : 
+            q(cite='https://lwn.net/Articles/806869/').
+              we here at OpenBSD are the kings of ABI-instability
+            | . He 
+            a(href='https://lwn.net/Articles/806870/') suggested
+            |  that relying on the OpenBSD ABI is fraught with peril:
+            blockquote(cite='https://lwn.net/Articles/806870/').
+              Program to the API rather than the ABI. When we see benefits,
+              we change the ABI more often than the API.
+              I have altered the ABI. Pray I do not alter it further.
+          figcaption
+            cite
+              a(href='https://lwn.net/Articles/806776/')
+                | Jake Edge, OpenBSD system-call-origin verification, LWN, 
+                time(datetime='2019-12-11') December 11, 2019
+
+        h2 Linux is different
+        p.
+          One of the things that make the Linux kernel interesting
+          is the fact it has a stable kernel-userspace interface.
+          Unlike virtually every other kernel and operating system,
+          Linux guarantees stability at the binary interface level.
+
+        figure
+          blockquote(cite='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/stable/syscalls').
+            This interface matches much of the POSIX interface
+            and is based on it and other Unix based interfaces.
+            It will only be added to over time, and not have things
+            removed from it.
+          figcaption
+            cite
+              a(href='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/stable/syscalls')
+                | torvalds/linux, Documentation/ABI/stable/syscalls, 
+                time(datetime='2006-06-21') 2006-06-21
+
+        p
+          | This is rooted in the fact Linux is a 
+          em kernel
+          | , not a complete operating system as traditionally defined.
+          | As an independent component, it 
+          em must
+          |  have a stable interface to user space software
+          | if anything is to be built upon it.
+
+        p
+          | While many people argue that Linux is not an operating
+          | system, there's no question that Linux is a 
+          em platform
+          |  and that it is possible to safely build directly upon it.
+          | There is no actual 
+          em need
+          |  to depend on anything else. Not even 
+          code libc
+          | .
