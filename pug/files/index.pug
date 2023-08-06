@@ -1,15 +1,16 @@
-doctype html
-html(lang='en-US')
-  head
-    meta(charset='utf-8')
-    title matheusmoreira.github.io
-    meta(name='author' content='Matheus Afonso Martins Moreira')
-    meta(name='description' content='Stuff I think about and don\'t want to forget.')
-  body
-    h1 A first step
-    p.
-      They say getting started is the hardest part, so I'm glad that's over. Now what shall I write about? I have some ideas...
-    nav
-      ol
-        li
-          a(href='linux/system-calls') Linux system calls
+extends ../templates/master
+
+append head
+  title matheusmoreira.github.io
+  meta(name='author' content='Matheus Afonso Martins Moreira')
+  meta(name='description' content='Stuff I think about and don\'t want to forget.')
+
+block body
+  h1 A first step
+  p.
+    They say getting started is the hardest part, so I'm glad that's over.
+    Now what shall I write about? I have some ideas...
+  nav
+    ol
+      li
+        a(href='linux/system-calls') Linux system calls
