@@ -33,7 +33,7 @@ jobs:
       - name: Build with Pug CLI
         run: node_modules/.bin/pug --out matheusmoreira.com/ pug/files/
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v1
+        uses: actions/upload-pages-artifact@v2
         with:
           path: 'matheusmoreira.com/'
 
