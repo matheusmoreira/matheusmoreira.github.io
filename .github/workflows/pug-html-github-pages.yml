@@ -28,8 +28,11 @@ jobs:
         uses: actions/setup-node@v3
         with:
           cache: 'npm'
-      - name: Clean install dependencies
-        run: npm ci
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install tidy
+          npm ci
       - name: Build with Pug CLI
         run: node_modules/.bin/pug --out matheusmoreira.com/ pug/files/
       - name: Copy CSS
