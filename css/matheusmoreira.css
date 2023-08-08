@@ -1,0 +1,12 @@
+body {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 10px;
+  font: 24px/1.5 "Noto Sans", sans-serif;
+  color: #444;
+  background: #EEE;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  line-height: 1.2;
+}
