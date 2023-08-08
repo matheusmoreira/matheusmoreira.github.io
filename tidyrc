@@ -1,0 +1,11 @@
+tidy-mark: false
+write-back: true
+input-encoding: utf8
+output-encoding: utf8
+newline: LF
+indent: true
+indent-spaces: 2
+indent-with-tabs: false
+wrap: 80
+vertical-space: true
+accessibility-check: 3
