@@ -35,8 +35,8 @@ jobs:
           npm ci
       - name: Build with Pug CLI
         run: node_modules/.bin/pugs pug/files/ matheusmoreira.com/
-      - name: Tidy HTML files
-        run: find matheusmoreira.com/ -name '*.html' -type f -exec tidy -config tidyrc '{}' \;
+      - name: Format files
+        run: npx prettier --write 'matheusmoreira.com/**/*'
       - name: Copy CSS
         run: cp -rf css/ matheusmoreira.com/
       - name: Upload artifact
