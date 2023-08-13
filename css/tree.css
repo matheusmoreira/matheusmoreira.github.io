@@ -1,0 +1,39 @@
+.tree {
+  --tree-color: black;
+}
+
+ul.tree, ul.tree ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+ul.tree li {
+  margin-left: 1em;
+  border-left: 2px solid var(--tree-color);
+}
+
+ul.tree li code {
+  display: block;
+  position: relative;
+  padding-left: 1em;
+  padding-bottom: 4px;
+}
+
+ul.tree li:not(ul.tree > li:first-child) code::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  width: 0.75em;
+  height: 0.5em;
+  border: 2px solid var(--tree-color);
+  border-top: 0 none transparent;
+  border-right: 0 none transparent;
+}
+
+ul.tree li:last-child {
+  border-left: 2px solid transparent;
+}
+
+ul.tree li:has(ul) > code::after {
+  content: '/';
+}
