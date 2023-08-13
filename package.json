@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "prettier": "^3.0.1",
     "pug-simple": "^1.0.0"
   }
 }
