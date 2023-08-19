@@ -1,0 +1,172 @@
+extends ../../templates/master
+
+include ../../mixins/code
+include ../../mixins/file-system
+
+append head
+  title Dotfiles with make
+  meta(name='author' content='Matheus Afonso Martins Moreira')
+  meta(name='description' content='Using make as a configuration file management tool.')
+  link(rel='stylesheet' href='/css/tree.css')
+
+block body
+
+  h1 Managing dotfiles with GNU Make
+  p.
+    Make is an old tool, an assembly language of sorts for build systems.
+    Many have tried to replace it. Many have tried to reinvent it.
+    Most people prefer to avoid it if at all possible.
+    So why use it to manage dotfiles of all things?
+  p.
+    There's at least one good reason to do this: make is ubiquitous.
+    Pretty much every machine that has ever compiled software will
+    have a copy of this thing. Using make as a dotfile management tool
+    eliminates the need to install yet another infrequently used program.
+  p.
+    Another reason to use it is this turned out to be a surprisingly easy task.
+
+  h2 File system structure
+  p.
+    Make works best when everything is as simple as possible.
+    It doesn't provide much functionality:
+    The few path manipulation functions it includes
+    are of the string matching and substitution variety.
+  p.
+    The easiest way to achieve that simplicity
+    is to mirror the structure of the home directory.
+    Like this:
+
+  +file-system
+    +directory('~/.files')
+      +directory('~')
+        +file('.bash_profile')
+        +file('.bashrc')
+        +file('.vimrc')
+        +file('...')
+      +file('GNUmakefile')
+
+  p.
+    The #[code ~] directory represents the current user's home directory.
+    Configuration files in #[code $HOME] will be symbolic links to their
+    corresponding files in the #[code ~] directory of the repository.
+  p.
+    Make's job is to automatically create those symbolic links:
+
+  +code.
+    cd ~/.files/
+    make
+
+  p Simplicity is good.
+
+  h2 Writing the makefile
+  p.
+    All link targets are rooted in the repository's #[code ~] directory,
+    so the first thing that must be done is find the repository itself.
+  p.
+    Make always knows the location of the makefile.
+    Since it is located in the root of the #[code .files] repository,
+    it's possible to find the repository itself through it.
+
+  +code.
+    makefile := $(abspath $(lastword $(MAKEFILE_LIST)))
+    dotfiles := $(abspath $(dir $(makefile)))
+
+  p.
+    A reference to the home directory
+    is already available in make
+    via the #[code $HOME] environment variable
+    and $[code ~] also works according to
+    #[a(href='https://www.gnu.org/software/make/manual/html_node/Wildcards.html#index-_007e-_0028tilde_0029') the documentation].
+    An equally easy way to refer to the dotfiles repository's
+    #[code ~] directory would be nice.
+
+  +code.
+    ~ := $(abspath $(dotfiles)/~)
+
+  p.
+    Now it is possible to write #[code ~] and #[code $(~)]
+    for the user's home directory and for the repository's
+    #[code ~] directory respectively.
+
+  h3 The symbolic linking rule
+  p.
+    Combining these variables and the fact the repository structure
+    mirrors the structure of the home directory, it becomes trivial
+    to write the rule:
+
+  +code.
+    force:
+    ~/% : $(~)/% force
+    	mkdir -p $(@D)
+    	ln -snf $@ $<
+    endef
+
+  p.
+    #[a(href='https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html') Automatic variables]
+    are used in the recipe for maximum brevity.
+    #[code $@] and #[code $<] refer to the link target and link name.
+    #[code #(@D)] refers to the directory of the new link,
+    ensuring the whole tree exists before attempting to create it.
+
+  h3 Generalizing and metaprogramming
+  p.
+    GNU Make is surprisingly lisp-like in its metaprogrammability.
+    It's possible to generate and evaluate code at runtime.
+    So why not generalize the previous rule into a function
+    that defines symbolic linking rules for any pair of directories
+    with matching structure?
+
+  +code.
+    force:
+
+    define rule.template
+    $(1)/% : $(2)/% force
+    	mkdir -p $$(@D)
+    	ln -snf $$@ $$<
+    endef
+
+    rule.define = $(eval $(call rule.template,$(1),$(2)))
+
+  p.
+    The #[code rule.define] function will generate
+    the original rule definition and evaluate it.
+    It's really easy to use:
+
+  +code.
+    $(call rule.define,~,$(~))
+
+  p Nice.
+
+  h3 Phony targets for usability
+  p.
+    By this point, the makefile already works
+    with any dotfile inside the repository.
+
+  +code.
+    make ~/.bash_profile ~/.bashrc
+
+  p.
+    Typing out all the file names is annoying though.
+    Phony targets can be used to group them:
+
+  +code.
+    all += bash
+    bash : ~/.bash_profile ~/.bashrc
+
+    all : $(all)
+    .PHONY: all $(all)
+    .DEFAULT_GOAL := basic
+
+  p.
+    This sets up a phony target for #[code bash],
+    maintains a list of all phony targets
+    and ensures they are declared as such,
+    creates an #[code all] phony target
+    that links everything and sets it
+    as the default goal.
+  p.
+    Now adding phony targets is easy:
+
+  +code.
+    all += git
+    git : ~/.gitconfig
