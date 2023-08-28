@@ -1,8 +1,5 @@
 extends ../../templates/master.pg
 
-include ../../mixins/code
-include ../../mixins/file-system
-
 append head
   title Dotfiles with make
   meta(name='author' content='Matheus Afonso Martins Moreira')
@@ -36,14 +33,19 @@ block body
     is to mirror the structure of the home directory.
     Like this:
 
-  +file-system
-    +directory('~/.files')
-      +directory('~')
-        +file('.bash_profile')
-        +file('.bashrc')
-        +file('.vimrc')
-        +file('...')
-      +file('GNUmakefile')
+  ul.tree
+    li
+      code ~/.files
+      ul
+        li
+          code ~
+          ul
+            li: code .bash_profile
+            li: code .bashrc
+            li: code .vimrc
+            li: code ...
+        li
+          code GNUmakefile
 
   p.
     The #[code ~] directory represents the current user's home directory.
@@ -51,7 +53,7 @@ block body
     corresponding files in the #[code ~] directory of the repository.
     Make's job is to automatically create those symbolic links.
 
-  +code.
+  pre: code.
     cd ~/.files/
     make
 
@@ -66,7 +68,7 @@ block body
     Since it is located in the root of the #[code .files] repository,
     it's possible to find the repository itself through it.
 
-  +code.
+  pre: code.
     makefile := $(abspath $(lastword $(MAKEFILE_LIST)))
     dotfiles := $(abspath $(dir $(makefile)))
 
@@ -79,7 +81,7 @@ block body
     An equally easy way to refer to the dotfiles repository's
     #[code ~] directory would be nice.
 
-  +code.
+  pre: code.
     ~ := $(abspath $(dotfiles)/~)
 
   p.
@@ -93,7 +95,7 @@ block body
     mirrors the structure of the home directory, it becomes trivial
     to write the rule:
 
-  +code.
+  pre: code.
     force:
     ~/% : $(~)/% force
     	mkdir -p $(@D)
@@ -115,7 +117,7 @@ block body
     that defines symbolic linking rules for any pair of directories
     with matching structure?
 
-  +code.
+  pre: code.
     force:
 
     define rule.template
@@ -131,7 +133,7 @@ block body
     and evaluate the original rule definition.
     It's really easy to use:
 
-  +code.
+  pre: code.
     $(call rule.define,~,$(~))
 
   p Nice.
@@ -141,14 +143,14 @@ block body
     By this point, the makefile already works
     with any dotfile inside the repository.
 
-  +code.
+  pre: code.
     make ~/.bash_profile ~/.bashrc
 
   p.
     Typing out all the file names is annoying though.
     Phony targets can be used to group them:
 
-  +code.
+  pre: code.
     all += bash
     bash : ~/.bash_profile ~/.bashrc
 
@@ -166,6 +168,6 @@ block body
   p.
     Now adding phony targets is easy:
 
-  +code.
+  pre: code.
     all += git
     git : ~/.gitconfig
