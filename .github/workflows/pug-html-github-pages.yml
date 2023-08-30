@@ -30,8 +30,6 @@ jobs:
           cache: 'npm'
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install tidy
           npm ci
       - name: Build with pugneum
         run: npx pugneum < pugneum.json
