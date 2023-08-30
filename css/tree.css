@@ -16,7 +16,8 @@ ul.tree li code {
   display: block;
   position: relative;
   padding-left: 1em;
-  padding-bottom: 4px;
+  padding-bottom: 0;
+  line-height: 1em;
 }
 
 ul.tree li:not(ul.tree > li:first-child) code::before {
