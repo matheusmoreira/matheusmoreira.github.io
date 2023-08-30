@@ -1,4 +1,4 @@
-extends ../templates/master
+extends ../templates/master.pg
 
 append head
   title matheusmoreira.com

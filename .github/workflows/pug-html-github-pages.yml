@@ -33,8 +33,8 @@ jobs:
           sudo apt-get update
           sudo apt-get install tidy
           npm ci
-      - name: Build with Pug CLI
-        run: node_modules/.bin/pugs pug/files/ matheusmoreira.com/
+      - name: Build with pugneum
+        run: npx pugneum < pugneum.json
       - name: Format files
         run: npx prettier --write 'matheusmoreira.com/**/*'
       - name: Copy CSS
