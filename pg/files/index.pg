@@ -13,4 +13,4 @@ block body
   nav
     ol
       li
-        a(href='linux/system-calls') Linux system calls
+        a(href='articles/linux-system-calls') Linux system calls
