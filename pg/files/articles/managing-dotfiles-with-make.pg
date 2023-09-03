@@ -8,7 +8,7 @@ append head
 
 block body
 
-  h1 Managing dotfiles with GNU Make
+  h1 Managing dotfiles with Make
   p.
     Make is an old tool, an assembly language of sorts for build systems.
     Many have tried to replace it. Many have tried to reinvent it.
