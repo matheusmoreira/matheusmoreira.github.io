@@ -1,8 +1,8 @@
 body {
-  max-width: 900px;
+  max-width: 1500px;
   margin: 40px auto;
   padding: 0 10px;
-  font: 24px/1.5 "Noto Sans", sans-serif;
+  font: 48px/1.5 "Noto Sans", sans-serif;
   color: #444;
   background: #EEE;
 }
