@@ -1,4 +1,4 @@
-extends ../../templates/master.pg
+extends /templates/master.pg
 
 append head
   title Dotfiles with make
