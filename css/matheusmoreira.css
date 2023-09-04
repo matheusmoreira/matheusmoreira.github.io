@@ -1,12 +1,17 @@
 body {
+  --text-color: #444;
+  --background-color: #eee;
+}
+
+body {
   max-width: 80ch;
   margin: 40px auto;
   padding: 0 40px;
   font:
     48px/1.5 "Noto Sans",
     sans-serif;
-  color: #444;
-  background: #EEE;
+  color: var(--text-color);
+  background: var(--background-color);
 }
 
 h1, h2, h3, h4, h5, h6 {
