@@ -2,7 +2,9 @@ body {
   max-width: 1500px;
   margin: 40px auto;
   padding: 0 40px;
-  font: 48px/1.5 "Noto Sans", sans-serif;
+  font:
+    48px/1.5 "Noto Sans",
+    sans-serif;
   color: #444;
   background: #EEE;
 }
@@ -16,5 +18,5 @@ pre {
   border-radius: 16px;
   padding: 48px;
   background-color: #444;
-  color: #EEE;
+  color: #eee;
 }

@@ -2,7 +2,8 @@
   --tree-color: black;
 }
 
-ul.tree, ul.tree ul {
+ul.tree,
+ul.tree ul {
   list-style-type: none;
   padding: 0;
 }
@@ -21,7 +22,7 @@ ul.tree li code {
 }
 
 ul.tree li:not(ul.tree > li:first-child) code::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -2px;
   width: 0.75em;
@@ -36,5 +37,5 @@ ul.tree li:last-child {
 }
 
 ul.tree li:has(ul) > code::after {
-  content: '/';
+  content: "/";
 }
