@@ -12,6 +12,10 @@
   color: #fa2772;
 }
 
+.token.punctuation {
+  opacity: 0.66;
+}
+
 .token.keyword,
 .token.property,
 .token.selector,
