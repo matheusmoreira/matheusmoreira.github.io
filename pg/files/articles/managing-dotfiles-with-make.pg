@@ -1,5 +1,8 @@
 extends /templates/master.pg
 
+include /mixins/code.pg
+include /mixins/file-system.pg
+
 append head
   title Dotfiles with make
   meta(name='author' content='Matheus Afonso Martins Moreira')
