@@ -58,3 +58,7 @@ pre {
   background-color: #444;
   color: #eee;
 }
+
+code {
+  font-family: "Noto Sans Mono", monospace;
+}
