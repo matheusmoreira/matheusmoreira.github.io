@@ -2,9 +2,9 @@ extends /templates/article.pg
 
 append head
   title Linux system calls
-  meta(name='author' content='Matheus Afonso Martins Moreira')
-  meta(name='description' content='Everything I know about Linux system calls.')
-  meta(name='keywords' content='linux, system call, syscall')
+  meta(name=author content='Matheus Afonso Martins Moreira')
+  meta(name=description content='Everything I know about Linux system calls.')
+  meta(name=keywords content='linux, system call, syscall')
 
 block article
   h1 Linux system calls
@@ -41,7 +41,7 @@ block article
     figcaption
       cite
         a(href='https://news.ycombinator.com/item?id=28413001').
-          marcan_42, Hacker News, #[time(datetime='2021-09-04') Sept 4, 2021]
+          marcan_42, Hacker News, #[time(datetime=2021-09-04) Sept 4, 2021]
 
   figure
     blockquote(cite='https://github.com/golang/go/issues/17490').
@@ -60,7 +60,7 @@ block article
       cite
         a(href='https://github.com/golang/go/issues/17490').
           copumpkin, golang/go GitHub issue #17490,
-          #[time(datetime='2016-10-17') Oct 17, 2016]
+          #[time(datetime=2016-10-17) Oct 17, 2016]
 
   p.
     Sometimes it's not even possible to use system calls at all.
@@ -93,7 +93,7 @@ block article
       cite
         a(href='https://lwn.net/Articles/806776/').
           Jake Edge, OpenBSD system-call-origin verification, LWN,
-          #[time(datetime='2019-12-11') December 11, 2019]
+          #[time(datetime=2019-12-11) December 11, 2019]
 
   h2 Linux is different
   p.
@@ -112,7 +112,7 @@ block article
       cite
         a(href='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/stable/syscalls').
           torvalds/linux, Documentation/ABI/stable/syscalls,
-          #[time(datetime='2006-06-21') 2006-06-21]
+          #[time(datetime=2006-06-21) 2006-06-21]
 
   p.
     This is rooted in the fact Linux is a #[em kernel],

@@ -5,10 +5,10 @@ include /mixins/file-system.pg
 
 append head
   title Dotfiles with make
-  meta(name='author' content='Matheus Afonso Martins Moreira')
-  meta(name='description' content='Using make as a configuration file management tool.')
-  link(rel='stylesheet' href='/css/tree.css')
-  link(rel='stylesheet' href='/css/monokai.prism.css')
+  meta(name=author content='Matheus Afonso Martins Moreira')
+  meta(name=description content='Using make as a configuration file management tool.')
+  link(rel=stylesheet href=/css/tree.css)
+  link(rel=stylesheet href=/css/monokai.prism.css)
 
 block article
 
