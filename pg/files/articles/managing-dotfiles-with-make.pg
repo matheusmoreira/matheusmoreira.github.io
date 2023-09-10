@@ -52,7 +52,7 @@ block body
     corresponding files in the #[code ~] directory of the repository.
     Make's job is to automatically create those symbolic links.
 
-  pre: code
+  +code
     :prismjs(language=shell)
       cd ~/.files/
       make
@@ -68,7 +68,7 @@ block body
     Since it is located in the root of the #[code .files] repository,
     it's possible to find the repository itself through it.
 
-  pre: code
+  +code
     :prismjs(language=makefile)
       makefile := $(abspath $(lastword $(MAKEFILE_LIST)))
       dotfiles := $(abspath $(dir $(makefile)))
@@ -82,7 +82,7 @@ block body
     An equally easy way to refer to the dotfiles repository's
     #[code ~] directory would be nice.
 
-  pre: code
+  +code
     :prismjs(language=makefile)
       ~ := $(abspath $(dotfiles)/~)
 
@@ -97,7 +97,7 @@ block body
     mirrors the structure of the home directory, it becomes trivial
     to write the rule:
 
-  pre: code
+  +code
     :prismjs(language=makefile)
       force:
 
@@ -121,7 +121,7 @@ block body
     that defines symbolic linking rules for any pair of directories
     with matching structure?
 
-  pre: code
+  +code
     :prismjs(language=makefile)
       force:
 
@@ -138,7 +138,7 @@ block body
     and evaluate the original rule definition.
     It's really easy to use:
 
-  pre: code
+  +code
     :prismjs(language=makefile)
       $(call rule.define,~,$(~))
 
@@ -149,7 +149,7 @@ block body
     By this point, the makefile already works
     with any dotfile inside the repository.
 
-  pre: code
+  +code
     :prismjs(language=shell)
       make ~/.bash_profile ~/.bashrc
 
@@ -157,7 +157,7 @@ block body
     Typing out all the file names is annoying though.
     Phony targets can be used to group them:
 
-  pre: code
+  +code
     :prismjs(language=makefile)
       all += bash
       bash : ~/.bash_profile ~/.bashrc
@@ -176,7 +176,7 @@ block body
   p.
     Now adding phony targets is easy:
 
-  pre: code
+  +code
     :prismjs(language=makefile)
       all += git
       git : ~/.gitconfig
