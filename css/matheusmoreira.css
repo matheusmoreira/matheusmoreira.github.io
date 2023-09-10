@@ -1,6 +1,7 @@
 body {
   --text-color: #444;
   --background-color: #eee;
+  --border-color: hsl(0 0% 20%);
 }
 
 body {
@@ -12,6 +13,17 @@ body {
     sans-serif;
   color: var(--text-color);
   background: var(--background-color);
+}
+
+header {
+  display: flex;
+  flex-direction: row-reverse;
+  flex-wrap: wrap;
+  align-content: space-between;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border-color);
+  padding: 1ch 2ch;
 }
 
 h1, h2, h3, h4, h5, h6 {
