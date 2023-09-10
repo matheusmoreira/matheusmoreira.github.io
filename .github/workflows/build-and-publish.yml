@@ -32,7 +32,7 @@ jobs:
         run: |
           npm ci
       - name: Build with pugneum
-        run: npx pugneum < pugneum.json
+        run: npx pugneum
       - name: Format files
         run: npx prettier --write 'matheusmoreira.com/**/*'
       - name: Copy CSS
