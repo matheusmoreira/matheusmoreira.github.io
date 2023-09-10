@@ -1,5 +1,5 @@
 .tree {
-  --tree-color: black;
+  --tree-color: var(--border-color);
 }
 
 ul.tree,
