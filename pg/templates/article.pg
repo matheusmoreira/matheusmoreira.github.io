@@ -1,0 +1,5 @@
+extends /templates/master.pg
+
+block body
+  article
+    block article
