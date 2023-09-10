@@ -1,4 +1,4 @@
-extends /templates/master.pg
+extends /templates/article.pg
 
 include /mixins/code.pg
 include /mixins/file-system.pg
@@ -10,7 +10,7 @@ append head
   link(rel='stylesheet' href='/css/tree.css')
   link(rel='stylesheet' href='/css/monokai.prism.css')
 
-block body
+block article
 
   h1 Managing dotfiles with Make
   p.
