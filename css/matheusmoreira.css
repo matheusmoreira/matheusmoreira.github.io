@@ -22,6 +22,7 @@ header {
   justify-content: space-between;
   align-items: flex-end;
   border-bottom: 1px solid var(--border-color);
+  padding: 0 4ch;
 }
 
 header a {
