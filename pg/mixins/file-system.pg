@@ -4,10 +4,10 @@ mixin file-system
 
 mixin file(name)
   li
-    code= name
+    code #{name}
 
 mixin directory(name)
   li
-    code= name
+    code #{name}
     ul
       block
