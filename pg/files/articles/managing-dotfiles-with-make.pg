@@ -37,19 +37,14 @@ block body
     is to mirror the structure of the home directory.
     Like this:
 
-  ul.tree
-    li
-      code ~/.files
-      ul
-        li
-          code ~
-          ul
-            li: code .bash_profile
-            li: code .bashrc
-            li: code .vimrc
-            li: code ...
-        li
-          code GNUmakefile
+  +file-system
+    +directory(~/.files)
+      +directory(~)
+        +file(.bash_profile)
+        +file(.bashrc)
+        +file(.vimrc)
+        +file(...)
+      +file(GNUmakefile)
 
   p.
     The #[code ~] directory represents the current user's home directory.
