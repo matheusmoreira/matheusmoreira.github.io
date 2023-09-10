@@ -26,6 +26,12 @@ header {
   padding: 1ch 2ch;
 }
 
+header a {
+  text-decoration: none;
+  display: block;
+  padding: 0.5ch;
+}
+
 h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
