@@ -21,7 +21,7 @@ header {
   flex-wrap: wrap;
   align-content: space-between;
   justify-content: space-between;
-  align-items: center;
+  align-items: stretch;
   border: 2px solid var(--border-color);
   margin: 4ch;
   padding: 0;
@@ -43,7 +43,6 @@ header a:hover {
 
 header nav {
   display: flex;
-  align-self: stretch;
 }
 
 header nav a {
