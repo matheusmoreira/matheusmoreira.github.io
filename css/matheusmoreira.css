@@ -1,7 +1,7 @@
 body {
-  --text-color: #444;
-  --background-color: #eee;
-  --border-color: hsl(0 0% 20%);
+  --text-color: hsl(0 0% 90%);
+  --background-color: hsl(192deg 100% 5%);
+  --border-color: hsl(156deg 40% 45%);
 }
 
 body {
