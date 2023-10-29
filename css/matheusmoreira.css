@@ -21,7 +21,7 @@ header {
   flex-wrap: wrap;
   align-content: space-between;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   border: 2px solid var(--border-color);
   margin: 4ch;
   padding: 0 4ch;
