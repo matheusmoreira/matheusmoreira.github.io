@@ -36,6 +36,11 @@ header a {
   font-weight: bold;
 }
 
+header a:hover {
+  background-color: var(--border-color);
+  color: var(--background-color);
+}
+
 header nav a {
   padding: 0.75ch;
   font-size: 0.75em;
