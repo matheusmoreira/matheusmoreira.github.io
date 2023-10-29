@@ -41,6 +41,10 @@ header a:hover {
   color: var(--background-color);
 }
 
+header nav {
+  display: flex;
+}
+
 header nav a {
   padding: 0.75ch;
   font-size: 0.75em;
