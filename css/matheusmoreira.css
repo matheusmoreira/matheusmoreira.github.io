@@ -1,4 +1,6 @@
 body {
+  --sans-serif-font: "Noto Sans", sans-serif;
+  --monospace-font: "Noto Sans Mono", monospace;
   --text-color: hsl(0 0% 90%);
   --background-color: hsl(192deg 100% 5%);
   --border-color: hsl(156deg 40% 45%);
@@ -8,9 +10,7 @@ body {
 body {
   margin: 0;
   padding: 0;
-  font:
-    24px/1.5 "Noto Sans",
-    sans-serif;
+  font: 24px/1.5 var(--sans-serif-font);
   color: var(--text-color);
   background: var(--background-color);
 }
@@ -74,7 +74,7 @@ pre {
 }
 
 code {
-  font-family: "Noto Sans Mono", monospace;
+  font-family: var(--monospace-font);
 }
 
 a {
