@@ -2,6 +2,7 @@ body {
   --text-color: hsl(0 0% 90%);
   --background-color: hsl(192deg 100% 5%);
   --border-color: hsl(156deg 40% 45%);
+  --link-color: hsl(156deg 40% 45%);
 }
 
 body {
@@ -63,3 +64,7 @@ pre {
 code {
   font-family: "Noto Sans Mono", monospace;
 }
+
+a {
+  color: var(--link-color);
+};
