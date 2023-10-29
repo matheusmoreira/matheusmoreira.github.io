@@ -28,6 +28,7 @@ header {
 }
 
 header a {
+  font-family: var(--monospace-font);
   text-decoration: none;
   display: block;
   padding: 1ch;
