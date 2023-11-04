@@ -151,7 +151,8 @@ block article
   p.
     These parameters are passed to the kernel in registers.
     The kernel also returns a result value in a register.
-    Which registers are used for which parameters and return values
+    Which registers are used for which parameters
+    and which register contains the return value
     defines the #[strong Linux system call calling convention].
   p.
     This calling convention is stable, allowing user space programs to
