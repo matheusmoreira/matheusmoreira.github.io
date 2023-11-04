@@ -176,3 +176,11 @@ block article
       a(href='https://lwn.net/Articles/604515/') Anatomy of a system call, part 2
     li
       a(href='https://lwn.net/Articles/604406/') Anatomy of a system call, additional content
+
+  p The calling convention is documented here:
+
+  ul
+    li
+      a(href='https://man7.org/linux/man-pages/man2/syscall.2.html') #[code syscall.2]
+    li
+      a(href='https://man7.org/linux/man-pages/man2/syscalls.2.html') #[code syscalls.2]
