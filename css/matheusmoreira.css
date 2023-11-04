@@ -18,7 +18,7 @@ body {
 header {
   display: flex;
   flex-direction: row;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-content: space-between;
   justify-content: space-between;
   align-items: stretch;
@@ -44,6 +44,10 @@ header a:hover {
 
 header nav {
   display: flex;
+  flex-wrap: wrap;
+  align-content: stretch;
+  justify-content: flex-end;
+  align-items: stretch;
 }
 
 header nav a {
