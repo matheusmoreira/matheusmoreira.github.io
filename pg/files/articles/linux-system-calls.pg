@@ -136,3 +136,31 @@ block article
     it is possible to safely build directly upon it.
     There is no actual #[em need] to depend on anything else.
     Not even #[code libc].
+
+  h2 How Linux system calls work
+  p.
+    Processor instruction set architectures contain special
+    instructions for calling the kernel. These instructions
+    cause the processor to switch to kernel mode and execute
+    code at a predefined location in the kernel.
+  p.
+    At least one parameter must be provided: the system call number,
+    often referred to as the #[code NR]. Linux uses this number as an
+    index into a table of function pointers to find the function being
+    called. Any other arguments are passed to this function.
+  p.
+    These parameters are passed to the kernel in registers.
+    The kernel also returns a result value in a register.
+    Which registers are used for which parameters and return values
+    defines the #[strong Linux system call calling convention].
+  p.
+    This calling convention is stable, allowing user space programs to
+    use it without fear of breakage. It is defined at the instruction set
+    level and so it is also programming language agnostic.
+    All user space programs written in any language may make use of it.
+    Typically, programs call #[code libc] functions which implement this
+    calling convention. However, that is not actually a requirement.
+    It's perfectly possible for a compiler to directly emit code
+    following that calling convention: it could have support for a
+    #[code system_call] keyword. A JIT compiler could generate code for this
+    at runtime.
