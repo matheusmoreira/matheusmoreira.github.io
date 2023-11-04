@@ -87,3 +87,20 @@ body p code {
 a {
   color: var(--link-color);
 }
+
+aside {
+  float: right;
+  width: 30%;
+  font-size: 75%;
+  margin: 1ch;
+  border: 2px solid var(--border-color);
+  padding: 1ch;
+}
+
+aside p:first-child {
+  margin-top: 0;
+}
+
+aside p:last-child {
+  margin-bottom: 0;
+}
