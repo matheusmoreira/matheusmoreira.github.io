@@ -9,6 +9,15 @@ append head
 block article
   h1 Linux system calls
   p.
+    For a long time I felt there was something unique about Linux.
+    Something was different, couldn't quite figure out what it was.
+    Only when I learned about Linux's system call interface
+    did I finally understand.
+  p.
+    This article contains everything I've learned.
+
+  h2 Why Linux system calls?
+  p.
     Programs usually interface with the kernel through libraries
     provided by the operating system, most commonly #[code libc].
     Through these libraries, they have access to system functions.
@@ -95,7 +104,7 @@ block article
           Jake Edge, OpenBSD system-call-origin verification, LWN,
           #[time(datetime=2019-12-11) December 11, 2019]
 
-  h2 Linux is different
+  h3 Linux is different
   p.
     One of the things that make the Linux kernel interesting
     is the fact it has a stable kernel-userspace interface.
