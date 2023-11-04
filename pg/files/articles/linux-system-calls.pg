@@ -164,3 +164,15 @@ block article
     following that calling convention: it could have support for a
     #[code system_call] keyword. A JIT compiler could generate code for this
     at runtime.
+
+  p.
+    The journalists at the LWN have written detailed articles about the
+    implementation of Linux system calls. They are definitely worth reading.
+
+  ol
+    li
+      a(href='https://lwn.net/Articles/604287/') Anatomy of a system call, part 1
+    li
+      a(href='https://lwn.net/Articles/604515/') Anatomy of a system call, part 2
+    li
+      a(href='https://lwn.net/Articles/604406/') Anatomy of a system call, additional content
