@@ -1,5 +1,7 @@
 extends /templates/article.pg
 
+include /mixins/code.pg
+
 append head
   title Linux system calls
   meta(name=author content='Matheus Afonso Martins Moreira')
@@ -185,3 +187,85 @@ block article
       a(href='https://man7.org/linux/man-pages/man2/syscall.2.html') #[code syscall.2]
     li
       a(href='https://man7.org/linux/man-pages/man2/syscalls.2.html') #[code syscalls.2]
+
+  h2 Implementing a system call function
+
+  p.
+    In order to make a system call, the parameters must be placed in the
+    appropriate registers, the system call instruction must be executed
+    and the return value must be collected from the return register.
+    System calls support a maximum of six arguments.
+  p.
+    Since the registers and system call instruction vary by architecture,
+    separate functions are needed for each architecture. Despite this,
+    it is simple to write a C function that can make any system call.
+
+  p.
+    For example, a system call function for the #[code x86_64] architecture:
+
+  +code
+    :prismjs(language=c)
+      long
+      linux_system_call_x86_64(long number,
+                               long _1, long _2, long _3,
+                               long _4, long _5, long _6)
+      {
+      	register long rax __asm__("rax") = number;
+      	register long rdi __asm__("rdi") = _1;
+      	register long rsi __asm__("rsi") = _2;
+      	register long rdx __asm__("rdx") = _3;
+      	register long r10 __asm__("r10") = _4;
+      	register long r8  __asm__("r8")  = _5;
+      	register long r9  __asm__("r9")  = _6;
+
+      	__asm__ volatile
+      	("syscall"
+
+      		: "+r" (rax),
+      		  "+r" (r8), "+r" (r9), "+r" (r10)
+      		: "r" (rdi), "r" (rsi), "r" (rdx)
+      		: "rcx", "r11", "cc", "memory");
+
+      	return rax;
+      }
+
+  p.
+    All parameters and the return value are of type #[code long].
+    This really just means "register": all values passed to the kernel
+    must fit in registers and typically #[code long] is register sized.
+    This means all arguments must either be simple values or pointers
+    to more complex structures.
+
+  p.
+    The function ensures all arguments are placed in the appropriate
+    registers by assigning them to local variables annotated with an
+    inline assembly directive which tells the compiler which register
+    to choose. The #[code register] keyword does nothing, it's there
+    just to make it clear what these variables are about.
+
+  p.
+    The #[code x86_64] architecture contains the aptly named #[code syscall]
+    instruction which switches to kernel mode and enters the kernel entry point.
+    Other architectures have different instructions. For example,
+    #[code aarch64] uses #[code svc #0] instead.
+
+  p.
+    The compiler is informed via the extended inline assembly construct
+    that this instruction has 7 inputs, 1 output and that it clobbers
+    some registers, the carry bit and memory.
+    The 7 inputs are all the previously assigned system call number
+    and parameter registers.
+    The output is the return value which is placed in #[code rax],
+    overwriting the system call number.
+  aside
+    p.
+      Some of the clobbered registers are in the outputs list instead
+      because they are also inputs and the compiler documentation says
+      clobbered registers are not used as inputs.
+      The result is a much more terse notation.
+
+  p.
+    After the system call has been made, all that's left to do is to return the result.
+    It may be a valid value or a negated #[code errno] constant.
+    The various #[code libc]s normalize those error values and place them in a global
+    #[code errno] variable. That's not necessary when using Linux system calls directly!
