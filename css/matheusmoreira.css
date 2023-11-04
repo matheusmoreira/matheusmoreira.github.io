@@ -16,6 +16,7 @@ body {
 }
 
 header {
+  max-width: 100ch;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -23,7 +24,7 @@ header {
   justify-content: space-between;
   align-items: stretch;
   border: 2px solid var(--border-color);
-  margin: 4ch;
+  margin: 4ch auto;
   padding: 0;
 }
 
