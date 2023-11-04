@@ -8,6 +8,8 @@ append head
   meta(name=description content='Everything I know about Linux system calls.')
   meta(name=keywords content='linux, system call, syscall')
 
+  link(rel=stylesheet href=/css/monokai.prism.css)
+
 block article
   h1 Linux system calls
   p.
