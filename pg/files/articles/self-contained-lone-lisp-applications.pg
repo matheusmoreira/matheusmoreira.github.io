@@ -154,7 +154,7 @@ block article
   p.
     So I created the #[code LONE] segment, a special type of segment
     allocated from ELF's generous operating system-specific
-    #[code [LOOS, HIOS\] = [0x60000000, 0x6FFFFFFF\]] range.
+    #[code LOOS-HIOS = 0x60000000-0x6FFFFFFF] range.
     That's what the #[code LOOS+0xc6f6e65] means.
     I figured if GNU can do it then I can too.
     It even spells out #[code lone] in ASCII.
