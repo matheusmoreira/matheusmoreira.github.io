@@ -1,0 +1,300 @@
+extends /templates/article.pg
+
+include /mixins/code.pg
+
+append head
+  title Self-contained Linux applications with lone lisp
+  meta(name=author content='Matheus Afonso Martins Moreira')
+  meta(name=description content='Creating standalone Linux applications with lone.')
+  meta(name=keywords content='freestanding, standalone, self-contained, linux, application, system call, syscall, lone, lisp')
+
+  link(rel=stylesheet href=/css/monokai.prism.css)
+
+block article
+  h1 Self-contained Linux applications with lone lisp
+  p.
+    I started #[a(href='https://github.com/lone-lang/lone') the lone lisp project]
+    to create a lisp language and environment exclusively for Linux.
+    I built into it support for arbitrary
+    #[a(href=/articles/linux-system-calls) Linux system calls]
+    so that it would be possible to implement any program
+    without need for any external dependencies and so that
+    every Linux feature would be available to programmers.
+  p.
+    Although far from ready for production use,
+    I have achieved a significant milestone
+    in the development of the language:
+    it is now possible to create self-contained,
+    standalone, freestanding, redistributable
+    Linux applications written entirely in lisp.
+  p.
+    Lisp code can now be embedded directly
+    into a copy of the lone interpreter
+    which may then be copied to and run
+    on any Linux system of the same architecture,
+    unmodified and without any external dependencies.
+    The application is limited only by the system calls it uses:
+    newer system calls will naturally require newer kernels.
+
+  h2 A simple implementation of #[code env] in lone lisp
+  p.
+    The #[code env] utility is among the simplest programs
+    available in Unix-like operating systems. It's most
+    fundamental function is to print the user's environment.
+    That function can be trivially implemented in lone lisp:
+
+  +code
+    :prismjs(language=lisp)
+      (import (lone print) (linux environment))
+
+      (print environment)
+
+  p.
+    Running this simple program produces a table
+    of environment variables and their values:
+
+  +code
+    :prismjs(language=shell)
+      $ ./lone < env.ln
+      { "HOME" "/home/matheus" "EDITOR" "vim" ... }
+
+  h3 Embedding #[code env.ln] into the interpreter
+  p.
+    In order to transform #[code env.ln]
+    into a self-contained #[code env] program,
+    the lone lisp code must be embedded into
+    a copy of the interpreter. This can be achieved
+    by the purpose-built #[code lone-embed] tool:
+
+  +code
+    :prismjs(language=shell)
+      $ cp lone env
+      $ lone-embed env env.ln
+
+  p.
+    The interpreter will then seamlessly load and execute the code:
+
+  +code
+    :prismjs(language=shell)
+      $ ./env
+      { "HOME" "/home/matheus" "EDITOR" "vim" ... }
+
+  h2 Elven segments
+  p.
+    Tracing the system calls of the application with #[code strace]
+    reveals an interesting property:
+
+  +code
+    :prismjs(language=shell)
+      $ strace env
+      execve("env", ["env"], 0x7fe9752d40 /* 31 vars */) = 0
+      write(1, "{ ", 2)                                  = 2
+      write(1, "\"", 1)                                  = 1
+      write(1, "HOME", 4)                                = 4
+      write(1, "\"", 1)                                  = 1
+      write(1, " ", 1)                                   = 1
+      ...
+
+  p.
+    It begins writing its output immediately.
+    There was no need for it to read from the file system.
+    So where does the code come from?
+
+  +code
+    :prismjs(language=shell)
+      $ xxd env | tail -n7
+      00032fe0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+      00032ff0: 0000 0000 0000 0000 0000 0000 0000 0000  ................
+      00033000: 7b20 7275 6e20 2830 202e 2036 3329 207d  { run (0 . 63) }
+      00033010: 0a28 696d 706f 7274 2028 6c6f 6e65 2070  .(import (lone p
+      00033020: 7269 6e74 2920 286c 696e 7578 2065 6e76  rint) (linux env
+      00033030: 6972 6f6e 6d65 6e74 2929 0a0a 2870 7269  ironment))..(pri
+      00033040: 6e74 2065 6e76 6972 6f6e 6d65 6e74 290a  nt environment).
+
+  p.
+    It's inside the executable at an aligned offset.
+    How does the interpreter load the code
+    from inside itself without using any system calls?
+    The answer lies in the ELF segments.
+
+  +code
+    :prismjs(language=shell)
+      $ readelf --segments env | grep 33000
+      LOAD           0x0000000000033000 0x0000000000312000 0x0000000000312000
+      LOOS+0xc6f6e65 0x0000000000033000 0x0000000000312000 0x0000000000312000
+
+  p.
+    ELF segments, also called program headers,
+    describe the memory image of the program.
+    There are many types of segments but especially
+    interesting are those of type #[code LOAD]:
+    as the name implies, they tell Linux which parts
+    of the file must be mapped at which addresses
+    in order for the program to work correctly.
+  p.
+    The #[code lone-embed] tool has simply
+    placed the lisp code inside the ELF itself
+    and then created a #[code LOAD] segment for it.
+    This gets Linux to map in the embedded code automatically
+    before the interpreter has even begun execution,
+    just like the interpreter's own code in the text section.
+  p.
+    The data will be in memory but the program doesn't know where at first.
+    It must find the address and size of the data block so it can process it.
+    There's a simple solution for that: Linux passes programs a pointer
+    to their program header tables via the auxiliary vector. All the program
+    has to do is find the correct #[code LOAD] entry.
+  p.
+    There's a few problems with #[code LOAD] segments though.
+    The first problem is their mandatory page boundary alignment
+    which obfuscates the true size of the data they contain.
+    The second problem is the fact all those loadable segments
+    are indistinguishable from one another. ELF sections have names,
+    program headers have nothing.
+  p.
+    So I created the #[code LONE] segment, a special type of segment
+    allocated from ELF's generous operating system-specific
+    #[code [LOOS, HIOS\] = [0x60000000, 0x6FFFFFFF\]] range.
+    That's what the #[code LOOS+0xc6f6e65] means.
+    I figured if GNU can do it then I can too.
+    It even spells out #[code lone] in ASCII.
+    Funny how things just seem to work themselves out.
+  p.
+    The #[code LONE] segment is not loadable
+    and thus does not have any alignment requirements,
+    allowing it to describe the data block exactly.
+    It can also be easily searched for.
+    Once found, it contains all the information
+    lone needs to load and execute the code.
+
+  +code
+    :prismjs(language=c)
+      struct lone_elf_segments lone_auxiliary_vector_elf_segments(struct lone_auxiliary_vector *auxiliary)
+      {
+          return (struct lone_elf_segments) {
+              .entry_size  = lone_auxiliary_vector_value(auxiliary, AT_PHENT).as.unsigned_integer,
+              .entry_count = lone_auxiliary_vector_value(auxiliary, AT_PHNUM).as.unsigned_integer,
+              .segments    = lone_auxiliary_vector_value(auxiliary, AT_PHDR).as.pointer
+          };
+      }
+
+      //      PT_LONE   l o n e
+      #define PT_LONE 0x6c6f6e65
+
+      typedef Elf64_Phdr lone_elf_segment; // if 64 bit
+      typedef Elf32_Phdr lone_elf_segment; // if 32 bit
+
+      lone_elf_segment *lone_auxiliary_vector_embedded_segment(struct lone_auxiliary_vector *values)
+      {
+          struct lone_elf_segments table;
+          size_t i;
+
+          table = lone_auxiliary_vector_elf_segments(values);
+
+          for (i = 0; i < table.entry_count; ++i) {
+              lone_elf_segment *entry = &table.segments[i];
+
+              if (entry->p_type == PT_LONE) {
+                  return entry;
+              }
+          }
+
+          return 0;
+      }
+
+      lone_elf_segment *segment = lone_auxiliary_vector_embedded_segment(auxvec);
+      struct lone_bytes data;
+      data.count = segment->p_memsz;
+      data.pointer = (unsigned char *) segment->p_vaddr;
+
+  p.
+    At this point it's smooth sailing.
+    Just gotta make sense of the bytes somehow.
+    I chose to simply put a descriptor object
+    in there and have the interpreter read it in.
+    Seemed like the simplest possible solution.
+    Just a good old hash table in lone lisp syntax.
+    The run key contains the offset and size
+    of the code the interpreter should run,
+    relative to the end of the descriptor object.
+    It just reads it in and evaluates it.
+  p.
+    Since it's just a normal hash table,
+    it's also infinitely extensible with
+    arbitrary schemas. I plan to implement
+    a modules key to contain an arbitrary
+    number of lone modules so that programs
+    can statically link their libraries
+    into the lone interpreter. All I gotta do
+    is place the embedded segment into the
+    module search path, before all the others.
+    I could also have interpreter configuration
+    in that object, making it easier to use.
+
+  h2 Special linker features
+  p.
+    In order to do all this,
+    I needed to add new segments
+    to the program. This turned out
+    to be much harder than anticipated.
+  p.
+    The program header table usually follows
+    the ELF header and precedes the contents
+    of the file. Appending new items to it
+    would require resizing the table and
+    everything that follows, invalidating
+    addresses. It just couldn't be done.
+    Well I couldn't figure out how to do it...
+    I tried to move the table to the end of the
+    file instead but couldn't get that to work either.
+    My program was somehow segfaulting before it even
+    reached the entry point.
+
+  h3 The #[code mold] linker saves the day
+  p.
+    The linker is in a privileged position.
+    It knows everything there is to know
+    about the ELF's memory layout
+    and can easily add new segments to it.
+  p.
+    I tried linker scripts at first
+    but just couldn't get it to work.
+    I concluded it would be easier to
+    request this feature instead.
+  p.
+    So I
+    #[a(href='https://sourceware.org/pipermail/binutils/2023-November/130640.html') emailed]
+    the GNU binutils mailing list...
+    Then I created an
+    #[a(href='https://github.com/llvm/llvm-project/issues/72386') LLVM issue]...
+
+  p.
+    Then I opened a #[code mold] issue.
+    The maintainer immediately understood
+    what I wanted to do and made it happen.
+    It was just beyond awesome.
+  p.
+    I waited eagerly for the new release
+    but got so excited I built this huge
+    C++ project from source
+    #[em on my smartphone]
+    just to integrate lone with it.
+  p.
+    All I had to do was put
+    #[code -Wl,--spare-program-headers,2]
+    in the #[code LDFLAGS].
+    It gave me two #[code NULL] program headers
+    for my patching utility to edit any way it wanted.
+    It worked perfectly.
+  p.
+    So #[code mold] is currently the only linker
+    with this capability. It would be nice
+    if the others gained this feature too...
+    Unless I can figure out a way to move
+    the program header table to the end of the file
+    without breaking everything, I'm pretty much
+    locked into using #[code mold].
+  p.
+    Well, I don't really mind.
+    It's free software, after all.
+    A pretty damn awesome one.
