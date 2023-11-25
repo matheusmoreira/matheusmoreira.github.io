@@ -160,7 +160,8 @@ block article
     These include things like processor architecture
     and capabilities, current user and group IDs,
     some random bytes, the location of the
-    #[a(href='https://www.man7.org/linux/man-pages/man7/vdso.7.html') vDSO]...
+    #[a(href='https://www.man7.org/linux/man-pages/man7/vdso.7.html') vDSO],
+    the system's page size...
 
   p.
     And the location of the program header table.
