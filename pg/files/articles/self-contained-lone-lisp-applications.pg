@@ -147,7 +147,8 @@ block article
   p.
     In addition to arguments and environment,
     processes receive the auxiliary vector.
-    It's essentially an array of key-value pairs.
+    It's essentially a null terminated array
+    of key-value pairs of various types.
     Through this mechanism, Linux passes various
     bits of useful information to programs.
     These include things like processor architecture
