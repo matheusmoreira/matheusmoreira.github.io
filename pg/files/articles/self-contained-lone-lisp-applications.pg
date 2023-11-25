@@ -145,12 +145,16 @@ block article
   p.
     The code will be in memory but its location and size are unknown.
     It could be anywhere inside the vastness of virtual address space.
-    Linux offers a very simple solution this conundrum: it tells us.
+    To that problem Linux provides an ingenious solution: it tells us
+    where it is.
+
   p.
-    In addition to arguments and environment,
+    In addition to argument and environment vectors,
     processes receive the auxiliary vector.
     It's essentially a null terminated array
-    of key-value pairs of various types.
+    of key-value pairs of various types
+    and it's places right there on the stack.
+  p.
     Through this mechanism, Linux passes various
     bits of useful information to programs.
     These include things like processor architecture
