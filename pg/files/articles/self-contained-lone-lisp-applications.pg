@@ -127,45 +127,34 @@ block article
     ELF segments, also called program headers,
     describe the memory image of the program.
     There are many types of segments but especially
-    interesting are those of type #[code LOAD]:
-    as the name implies, they tell Linux which parts
-    of the file must be mapped at which addresses
-    in order for the program to work correctly.
+    interesting are the #[code LOAD] segments which
+    tell Linux which parts of the file must be
+    mapped to which addresses in order for
+    the program to work correctly.
   p.
-    The #[code lone-embed] tool has simply
-    placed the lisp code inside the ELF itself
-    and then created a #[code LOAD] segment for it.
-    This gets Linux to map in the embedded code automatically
-    before the interpreter has even begun execution,
-    just like the interpreter's own code in the text section.
+    The #[code lone-embed] tool copies
+    the lisp code into the ELF and then
+    creates a #[code LOAD] segment for it.
+    Linux then maps in the embedded code
+    automatically at load time before the
+    interpreter has even started.
+
+  h3 Finding the segment
   p.
-    The data will be in memory but the program doesn't know where at first.
-    It must find the address and size of the data block so it can process it.
-    There's a simple solution for that: Linux passes programs a pointer
-    to their program header tables via the auxiliary vector. All the program
-    has to do is find the correct #[code LOAD] entry.
+    The code will be in memory but its location and size are unknown.
+    It could be anywhere inside the vastness of virtual address space.
+    Linux offers a very simple solution this conundrum: it tells us.
   p.
-    There's a few problems with #[code LOAD] segments though.
-    The first problem is their mandatory page boundary alignment
-    which obfuscates the true size of the data they contain.
-    The second problem is the fact all those loadable segments
-    are indistinguishable from one another. ELF sections have names,
-    program headers have nothing.
-  p.
-    So I created the #[code LONE] segment, a special type of segment
-    allocated from ELF's generous operating system-specific
-    #[code LOOS-HIOS = 0x60000000-0x6FFFFFFF] range.
-    That's what the #[code LOOS+0xc6f6e65] means.
-    I figured if GNU can do it then I can too.
-    It even spells out #[code lone] in ASCII.
-    Funny how things just seem to work themselves out.
-  p.
-    The #[code LONE] segment is not loadable
-    and thus does not have any alignment requirements,
-    allowing it to describe the data block exactly.
-    It can also be easily searched for.
-    Once found, it contains all the information
-    lone needs to load and execute the code.
+    In addition to arguments and environment,
+    processes receive the auxiliary vector.
+    It's essentially an array of key-value pairs.
+    Through this mechanism, Linux passes various
+    bits of useful information to programs.
+    These include things like processor architecture
+    and capabilities, current user and group IDs,
+    some random bytes, the location of the
+    #[a(href='https://www.man7.org/linux/man-pages/man7/vdso.7.html') vDSO]...
+    and the location of the program header table.
 
   +code
     :prismjs(language=c)
@@ -178,9 +167,53 @@ block article
           };
       }
 
+  p.
+    The table is just a contiguous array
+    of ELF program header structures.
+    Given this pointer, all the program has to do
+    is scan the table and find the correct entry.
+    One does not simply search for #[code LOAD] entries, however.
+    Attempting to do it uncovers a couple of problems.
+  p.
+    The first problem is the fact there are lots of these loadable
+    segments and they're all indistinguishable from one another.
+    ELF sections have names, program headers have nothing.
+    The second problem is their mandatory page boundary alignment.
+    This obfuscates the true size of the data they contain.
+
+  h4 The lone segment
+  p.
+    In order to solve this, I created my own custom segment type:
+    the #[code LONE] segment.
+  p.
+    ELF provides an incredibly generous numeric range
+    for operating system-specific segments.
+    All the values between #[code LOOS] and #[code HIOS]
+    are free for operating systems to allocate.
+    Those definitions represent a range of integers
+    between #[code 0x60000000] and #[code 0x6FFFFFFF] inclusive.
+    That's 268,435,455 integers.
+  p.
+    So I just picked one. That's what the #[code LOOS+0xc6f6e65] means.
+    I figured if GNU can do it then so can I.
+    Spelled out #[code lone] in ASCII and it just worked itself out.
+
+  +code
+    :prismjs(language=c)
       //      PT_LONE   l o n e
       #define PT_LONE 0x6c6f6e65
 
+  p.
+    The #[code LONE] segment is not loadable
+    and thus does not have any alignment requirements,
+    allowing it to describe the embedded segment exactly.
+    It also serves as a magic number which makes it trivial
+    to search for it in the program header table.
+    Once found, it contains all the information
+    lone needs to load and execute the code.
+
+  +code
+    :prismjs(language=c)
       typedef Elf64_Phdr lone_elf_segment; // if 64 bit
       typedef Elf32_Phdr lone_elf_segment; // if 32 bit
 
@@ -213,6 +246,12 @@ block article
     I chose to simply put a descriptor object
     in there and have the interpreter read it in.
     Seemed like the simplest possible solution.
+
+  +code
+    :prismjs(language=lisp)
+      { run (0 . 63) }
+
+  p.
     Just a good old hash table in lone lisp syntax.
     The run key contains the offset and size
     of the code the interpreter should run,
@@ -228,8 +267,9 @@ block article
     into the lone interpreter. All I gotta do
     is place the embedded segment into the
     module search path, before all the others.
-    I could also have interpreter configuration
-    in that object, making it easier to use.
+    I could also allow interpreter configuration
+    via the descriptor object, eliminating the need
+    for command line switches.
 
   h2 Special linker features
   p.
@@ -296,5 +336,4 @@ block article
     locked into using #[code mold].
   p.
     Well, I don't really mind.
-    It's free software, after all.
-    A pretty damn awesome one.
+    It's free software after all.
