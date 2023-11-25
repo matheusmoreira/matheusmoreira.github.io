@@ -206,12 +206,12 @@ block article
           return (struct lone_auxiliary_value) { .as.integer = 0 };
       }
 
-      struct lone_elf_segments lone_auxiliary_vector_elf_segments(struct lone_auxiliary_vector *auxiliary)
+      struct lone_elf_segments lone_auxiliary_vector_elf_segments(struct lone_auxiliary_vector *auxv)
       {
           return (struct lone_elf_segments) {
-              .entry_size  = lone_auxiliary_vector_value(auxiliary, AT_PHENT).as.unsigned_integer,
-              .entry_count = lone_auxiliary_vector_value(auxiliary, AT_PHNUM).as.unsigned_integer,
-              .segments    = lone_auxiliary_vector_value(auxiliary, AT_PHDR).as.pointer
+              .entry_size  = lone_auxiliary_vector_value(auxv, AT_PHENT).as.unsigned_integer,
+              .entry_count = lone_auxiliary_vector_value(auxv, AT_PHNUM).as.unsigned_integer,
+              .segments    = lone_auxiliary_vector_value(auxv, AT_PHDR).as.pointer
           };
       }
 
@@ -272,23 +272,19 @@ block article
 
       lone_elf_segment *lone_auxiliary_vector_embedded_segment(struct lone_auxiliary_vector *values)
       {
-          struct lone_elf_segments table;
-          size_t i;
+          struct lone_elf_segments table = lone_auxiliary_vector_elf_segments(values);
 
-          table = lone_auxiliary_vector_elf_segments(values);
-
-          for (i = 0; i < table.entry_count; ++i) {
+          for (size_t i = 0; i < table.entry_count; ++i) {
               lone_elf_segment *entry = &table.segments[i];
 
-              if (entry->p_type == PT_LONE) {
+              if (entry->p_type == PT_LONE)
                   return entry;
-              }
           }
 
           return 0;
       }
 
-      lone_elf_segment *segment = lone_auxiliary_vector_embedded_segment(auxvec);
+      lone_elf_segment *segment = lone_auxiliary_vector_embedded_segment(auxv);
       struct lone_bytes data;
       data.count = segment->p_memsz;
       data.pointer = (unsigned char *) segment->p_vaddr;
