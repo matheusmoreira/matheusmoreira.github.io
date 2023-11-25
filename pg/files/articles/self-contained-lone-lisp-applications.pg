@@ -315,7 +315,7 @@ block article
 
   h2 Special linker features
   p.
-    Remember the [code lone-embed] tool which I briefly mentioned
+    Remember the #[code lone-embed] tool which I briefly mentioned
     at the beginning of the articled? It's an ELF patching tool
     which I built specifically for this purpose and it's doing
     #[em a lot of] heavy lifting here.
