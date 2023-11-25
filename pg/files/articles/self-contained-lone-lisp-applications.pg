@@ -167,6 +167,20 @@ block article
 
   +code
     :prismjs(language=c)
+      struct lone_auxiliary_value {
+          union {
+              char *c_string;
+              void *pointer;
+              long integer;
+              unsigned long unsigned_integer;
+          } as;
+      };
+
+      struct lone_auxiliary_vector {
+          long type;
+          struct lone_auxiliary_value value;
+      };
+
       struct lone_auxiliary_value lone_auxiliary_vector_value(struct lone_auxiliary_vector *auxiliary, long type)
       {
           for (/* auxiliary */; auxiliary->type != AT_NULL; ++auxiliary)
