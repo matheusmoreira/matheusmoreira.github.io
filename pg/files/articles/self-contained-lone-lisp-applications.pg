@@ -178,7 +178,8 @@ block article
     The first problem is the fact there are lots of these loadable
     segments and they're all indistinguishable from one another.
     ELF sections have names, program headers have nothing.
-    The second problem is their mandatory page boundary alignment.
+    The second problem is their alignment requirements.
+    The addresses and sizes are usually aligned to page boundaries.
     This obfuscates the true size of the data they contain.
 
   h4 The lone segment
@@ -192,16 +193,18 @@ block article
     are free for operating systems to allocate.
     Those definitions represent a range of integers
     between #[code 0x60000000] and #[code 0x6FFFFFFF] inclusive.
-    That's 268,435,455 integers.
+    That's 268,435,455 magic numbers.
   p.
     So I just picked one. That's what the #[code LOOS+0xc6f6e65] means.
-    I figured if GNU can do it then so can I.
     Spelled out #[code lone] in ASCII and it just worked itself out.
 
   +code
     :prismjs(language=c)
       //      PT_LONE   l o n e
       #define PT_LONE 0x6c6f6e65
+
+  p.
+    I figured if GNU can do it then so can I.
 
   p.
     The #[code LONE] segment is not loadable
