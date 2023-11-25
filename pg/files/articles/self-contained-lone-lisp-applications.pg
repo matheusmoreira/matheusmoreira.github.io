@@ -36,6 +36,13 @@ block article
     The application is limited only by the system calls it uses:
     newer system calls will naturally require newer kernels.
 
+  p.
+    In this article I will demonstrate this capability,
+    explain how it works and the journey to implementing it.
+    Every script bundling tool I've ever seen unpacks the code
+    to some file system location and then reads it back in.
+    I came up with a different solution.
+
   h2 A simple implementation of #[code env] in lone lisp
   p.
     The #[code env] utility is among the simplest programs
