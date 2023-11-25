@@ -177,7 +177,11 @@ block article
       struct lone_auxiliary_vector {
           long type;
           struct lone_auxiliary_value value;
-      };
+      } *auxiliary_vector;
+
+      void **pointer = (void **) envp;
+      while (*pointer++ != 0);
+      auxiliary_vector = (struct auxiliary_vector *) pointer;
 
   p.
     Through this mechanism, Linux passes various
