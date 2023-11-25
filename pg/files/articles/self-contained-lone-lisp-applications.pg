@@ -254,7 +254,7 @@ block article
       #define PT_LONE 0x6c6f6e65
 
   p.
-    I figured if GNU can do it then so can I.
+    I figured if GNU can do it then I can do it too.
 
   p.
     The #[code LONE] segment is not loadable
