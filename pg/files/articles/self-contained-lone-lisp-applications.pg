@@ -409,7 +409,7 @@ block article
     required for #[code lone-embed] to work.
     It will outright refuse to patch the ELF
     if it doesn't find at least two #[code NULL]
-    entries in it.
+    program headers in it.
 
   p.
     Would be nice if the others gained this feature too.
