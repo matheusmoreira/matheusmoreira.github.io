@@ -270,9 +270,9 @@ block article
       typedef Elf64_Phdr lone_elf_segment; // if 64 bit
       typedef Elf32_Phdr lone_elf_segment; // if 32 bit
 
-      lone_elf_segment *lone_auxiliary_vector_embedded_segment(struct lone_auxiliary_vector *values)
+      lone_elf_segment *lone_auxiliary_vector_embedded_segment(struct lone_auxiliary_vector *auxv)
       {
-          struct lone_elf_segments table = lone_auxiliary_vector_elf_segments(values);
+          struct lone_elf_segments table = lone_auxiliary_vector_elf_segments(auxv);
 
           for (size_t i = 0; i < table.entry_count; ++i) {
               lone_elf_segment *entry = &table.segments[i];
