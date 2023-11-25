@@ -210,7 +210,9 @@ block article
   p.
     The first problem is the fact there are lots of these loadable
     segments and they're all indistinguishable from one another.
-    ELF sections have names, program headers have nothing.
+    ELF sections have unique names for identification,
+    program headers have nothing.
+  p.
     The second problem is their alignment requirements.
     The addresses and sizes are usually aligned to page boundaries.
     This obfuscates the true size of the data they contain.
