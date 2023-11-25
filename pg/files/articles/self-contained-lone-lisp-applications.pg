@@ -186,8 +186,8 @@ block article
       }
 
   p.
-    The table is just a contiguous array
-    of ELF program header structures.
+    The table is just a contiguous array of
+    #[a(href='https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#Program_header') ELF program header structures].
     Given this pointer, all the program has to do
     is scan the table and find the correct entry.
     One does not simply search for #[code LOAD] entries, however.
