@@ -367,8 +367,8 @@ block article
     It knows everything there is to know
     about the program's memory layout
     and can easily add new ELF segments to it
-    if it so wills it. If a solution exists,
-    I was convinced it must be there.
+    seemingly at will. If a solution exists,
+    I was convinced it would be found in the linker.
   p.
     So I started learning
     #[a(href='https://sourceware.org/binutils/docs/ld/Scripts.html') linker script].
