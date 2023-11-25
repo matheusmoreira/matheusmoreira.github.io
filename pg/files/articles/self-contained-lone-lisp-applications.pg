@@ -160,7 +160,7 @@ block article
     processes receive the auxiliary vector.
     It's essentially a null terminated array
     of key-value pairs of various types
-    and it's places right there on the stack
+    and it's placed right there on the stack
     just after the environment vector.
 
   +code
