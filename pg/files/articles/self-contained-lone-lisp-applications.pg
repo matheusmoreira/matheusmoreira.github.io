@@ -98,7 +98,7 @@ block article
   p.
     It begins writing its output immediately.
     There was no need for it to read from the file system.
-    So where does the code come from?
+    The code must be somewhere else.
 
   +code
     :prismjs(language=shell)
@@ -112,10 +112,12 @@ block article
       00033040: 6e74 2065 6e76 6972 6f6e 6d65 6e74 290a  nt environment).
 
   p.
-    It's inside the executable at an aligned offset.
-    How does the interpreter load the code
-    from inside itself without using any system calls?
-    The answer lies in the ELF segments.
+    It's at the very end of the executable itself, at an aligned offset.
+    Through some elven magic the interpreter is reflecting upon its own
+    contents at runtime. It's loading the code from inside itself and
+    evaluating it. Without using any system calls to do it.
+  p.
+    The source of this magic is the ELF segment.
 
   +code
     :prismjs(language=shell)
