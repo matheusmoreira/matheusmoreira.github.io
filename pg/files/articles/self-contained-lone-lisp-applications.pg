@@ -279,10 +279,14 @@ block article
       data.pointer = (unsigned char *) segment->p_vaddr;
 
   p.
+    The interpreter now has the address and size
+    of the data embedded into its own executable.
     At this point it's smooth sailing.
-    Just gotta make sense of the bytes somehow.
-    I chose to simply put a descriptor object
-    in there and have the interpreter read it in.
+
+  p.
+    All that's left to do is to make sense of the bytes.
+    I chose to simply put a descriptor object in there
+    and have the interpreter read it in.
     Seemed like the simplest possible solution.
 
   +code
@@ -294,7 +298,7 @@ block article
     The run key contains the offset and size
     of the code the interpreter should run,
     relative to the end of the descriptor object.
-    It just reads it in and evaluates it.
+    It just reads in that slice and evaluates it.
   p.
     Since it's just a normal hash table,
     it's also infinitely extensible with
@@ -305,9 +309,9 @@ block article
     into the lone interpreter. All I gotta do
     is place the embedded segment into the
     module search path, before all the others.
-    I could also allow interpreter configuration
-    via the descriptor object, eliminating the need
-    for command line switches.
+    I suppose I could also allow configuring
+    the interpreter via the descriptor object,
+    eliminating the need for command line switches.
 
   h2 Special linker features
   p.
