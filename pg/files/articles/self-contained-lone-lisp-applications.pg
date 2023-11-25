@@ -315,34 +315,58 @@ block article
 
   h2 Special linker features
   p.
-    In order to do all this,
-    I needed to add new segments
-    to the program. This turned out
-    to be much harder than anticipated.
+    Remember the [code lone-embed] tool which I briefly mentioned
+    at the beginning of the articled? It's an ELF patching tool
+    which I built specifically for this purpose and it's doing
+    #[em a lot of] heavy lifting here.
+  p.
+    When programs are compiled and linked,
+    the program headers are set in stone.
+    Yet to do all of this I needed to
+    append new segments to the program
+    header table. This turned out to be
+    #[em much] harder than anticipated.
+
   p.
     The program header table usually follows
     the ELF header and precedes the contents
     of the file. Appending new items to it
-    would require resizing the table and
-    everything that follows, invalidating
-    addresses. It just couldn't be done.
-    Well I couldn't figure out how to do it...
-    I tried to move the table to the end of the
-    file instead but couldn't get that to work either.
-    My program was somehow segfaulting before it even
-    reached the entry point.
+    would require resizing the table,
+    which would require shifting up the addresses
+    of #[em everything] that comes after it,
+    invalidating pointers to the old addresses.
+    As far as I can tell, it just can't be done
+    without reinventing the linker itself.
+  p.
+    I tried to move the table to the end of the file
+    instead but couldn't get that to work either.
+    My program was somehow segfaulting before
+    it even reached the entry point, gdb was useless,
+    I couldn't understand what was going on
+    and was reduced to desperately dumping
+    #[code readelf] output on stackoverflow
+    in hopes someone would spot the problem.
+    Well #[em someone] did and quickly at that
+    but clearly this was not a sustainable
+    software development strategy.
 
   h3 The #[code mold] linker saves the day
   p.
     The linker is in a privileged position.
     It knows everything there is to know
-    about the ELF's memory layout
-    and can easily add new segments to it.
+    about the program's memory layout
+    and can easily add new ELF segments to it
+    if it so wills it. If a solution exists,
+    I was convinced it must be there.
   p.
-    I tried linker scripts at first
-    but just couldn't get it to work.
-    I concluded it would be easier to
-    request this feature instead.
+    So I started learning
+    #[a(href='https://sourceware.org/binutils/docs/ld/Scripts.html') linker script].
+    Turns out it has a #[code PHDRS] command
+    which is exactly what I needed but I couldn't
+    figure out how to use it. I just kept getting
+    "unable to allocate headers" errors no matter
+    what I tried. I concluded it would be easier
+    to simply #[em ask] for this feature instead.
   p.
     So I
     #[a(href='https://sourceware.org/pipermail/binutils/2023-November/130640.html') emailed]
@@ -353,29 +377,36 @@ block article
   p.
     Then I opened a #[code mold] issue.
     The maintainer immediately understood
-    what I wanted to do and made it happen.
-    It was just beyond awesome.
+    what I wanted to do and
+    #[a(href='https://github.com/rui314/mold/commit/eb6c213f2a9aa8a101b2b52a791be369d165e6a9') made it happen]
+    with what was essentially a single line of code chage.
+    Just #[em beyond awesome].
   p.
     I waited eagerly for the new release
     but got so excited I built this huge
-    C++ project from source
-    #[em on my smartphone]
+    C++ project from source #[em on my smartphone]
     just to integrate lone with it.
-  p.
     All I had to do was put
     #[code -Wl,--spare-program-headers,2]
     in the #[code LDFLAGS].
     It gave me two #[code NULL] program headers
     for my patching utility to edit any way it wanted.
-    It worked perfectly.
+    It worked #[em perfectly].
   p.
-    So #[code mold] is currently the only linker
-    with this capability. It would be nice
-    if the others gained this feature too...
+    So far #[code mold] is the only linker
+    with this feature and it's absolutely
+    required for #[code lone-embed] to work.
+    It will outright refuse to patch the ELF
+    if it doesn't find at least two #[code NULL]
+    entries in it.
+
+  p.
+    Would be nice if the others gained this feature too.
     Unless I can figure out a way to move
     the program header table to the end of the file
     without breaking everything, I'm pretty much
     locked into using #[code mold].
-  p.
     Well, I don't really mind.
-    It's free software after all.
+    It's an awesome linker
+    #[em and] it's free software.
+    I'm OK with this!
