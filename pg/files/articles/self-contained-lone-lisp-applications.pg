@@ -161,17 +161,6 @@ block article
     It's essentially a null terminated array
     of key-value pairs of various types
     and it's places right there on the stack.
-  p.
-    Through this mechanism, Linux passes various
-    bits of useful information to programs.
-    These include things like processor architecture
-    and capabilities, current user and group IDs,
-    some random bytes, the location of the
-    #[a(href='https://www.man7.org/linux/man-pages/man7/vdso.7.html') vDSO],
-    the system's page size...
-
-  p.
-    And the location of the program header table.
 
   +code
     :prismjs(language=c)
@@ -189,6 +178,20 @@ block article
           struct lone_auxiliary_value value;
       };
 
+  p.
+    Through this mechanism, Linux passes various
+    bits of useful information to programs.
+    These include things like processor architecture
+    and capabilities, current user and group IDs,
+    some random bytes, the location of the
+    #[a(href='https://www.man7.org/linux/man-pages/man7/vdso.7.html') vDSO],
+    the system's page size...
+
+  p.
+    And the location of the program header table.
+
+  +code
+    :prismjs(language=c)
       struct lone_auxiliary_value lone_auxiliary_vector_value(struct lone_auxiliary_vector *auxiliary, long type)
       {
           for (/* auxiliary */; auxiliary->type != AT_NULL; ++auxiliary)
