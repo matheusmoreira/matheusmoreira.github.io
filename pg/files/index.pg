@@ -13,6 +13,8 @@ block body
   nav
     ol
       li
+        a(href='/articles/self-contained-lone-lisp-applications') Self-contained Linux applications with lone lisp
+      li
         a(href='articles/managing-dotfiles-with-make') Managing dotfiles with Make
       li
         a(href='articles/linux-system-calls') Linux system calls
