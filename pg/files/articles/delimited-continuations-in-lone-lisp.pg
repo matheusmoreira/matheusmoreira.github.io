@@ -137,7 +137,7 @@ block article
     now he's going to teach me how to iterate properly.
 
   p.
-    These awesome written articles demonstrate
+    These beautifully written articles demonstrate
     exactly why Ruby is nice. Ruby lets programmers
     write nice code that passes values to blocks,
     just like my #[code each] function. Whenever
@@ -178,7 +178,7 @@ block article
     Makes sense, it's just that lone doesn't have
     an instruction pointer. I didn't want to
     transform the lisp code into bytecode.
-    Is it really lisp if I get rid if the lists?
+    Is it really lisp if I get rid of the lists?
     I didn't think so.
 
   p.
@@ -197,7 +197,7 @@ block article
     #[abbr(title='Structure and Interpretation of Computer Programs') SICP], for short.
     #[strong THE] book of the Scheme programming language.
     One of the most classic books in the field.
-    Computers? Science? More like wizards casting spells,
+    Science? Nah, we're more like wizards casting spells,
     computers are merely the runes upon which we inscribe
     our programs. As awesome as that is, the book is not
     an easy read, especially for someone like me who doesn't
