@@ -737,8 +737,8 @@ block article
     To unwind the stack, simply pop off
     frames until you reach the frame you
     were looking for. Once the delimiter
-    is on top of the stack, the calling
-    convention matches that of primitives.
+    is on top of the stack, the stack
+    discipline matches that of primitives.
     The return value can simply be pushed
     onto the stack.
 
