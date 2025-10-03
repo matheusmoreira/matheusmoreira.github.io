@@ -470,7 +470,7 @@ block article
     I entertained the idea of just saving the entire
     C stack instead. I quickly gave up on this approach
     but not before I
-    #[a(href='https://langdev.stackexchange.com/q/3547') asked a question about it]
+    #[a(href='https://langdev.stackexchange.com/q/4204') asked a question about it]
     on Stack Exchange which produced a very interesting
     answer. So it #[em was] possible... Probably not
     wise but still. I always find it reassuring when
