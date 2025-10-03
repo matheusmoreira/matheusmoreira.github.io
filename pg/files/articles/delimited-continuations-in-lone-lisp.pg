@@ -860,9 +860,9 @@ block article
     the moment it was thrown.
   p.
     The exception handler code can just ignore
-    the continuation and do nothing, which is
-    what normally happens when exceptions are
-    handled in pretty much every other language.
+    the continuation and do nothing with it,
+    which is what normally happens when exceptions
+    are handled in pretty much every other language.
   p.
     However, the callable continuation value
     allows another possibility: it lets the
