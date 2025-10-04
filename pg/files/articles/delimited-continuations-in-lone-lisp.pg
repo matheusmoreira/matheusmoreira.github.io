@@ -865,7 +865,7 @@ block article
     are handled in pretty much every other language.
   p.
     However, the callable continuation value
-    allows another possibility: it lets the
+    allows another possibility: it allows the
     handler code to plug a value back into
     the code being tried, as though the
     #[code throw] primitive had returned it!
