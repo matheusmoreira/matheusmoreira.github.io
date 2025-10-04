@@ -894,11 +894,15 @@ block article
       try:
         # Unwound
       except error, continuation:
-          print(10 + 10)
+          try:
+              print(10 + 10)
+          except error, continuation:
+              continuation(10)    # Dead code (in this case)
 
   p.
     It's as if the #[code throw] primitive
-    #[em captured all the pending computations]
+    #[em captured all the pending computations],
+    #[code try] block, exception handler and all,
     at its call site and reified them into
     a callable value. When called, the
     value gets replaced with those exact
