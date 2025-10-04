@@ -1008,23 +1008,27 @@ block article
 
               /* Unpack arguments... */
 
-              /* Skips primitive function delimiter and an extraneous step */
-              for (delimiter = lone->machine.stack.top - 1 - 2,
-                   frame_count = 0;
-                   delimiter >= machine->stack.base &&
-                   delimiter->type != LONE_LISP_MACHINE_STACK_FRAME_TYPE_CONTINUATION_DELIMITER;
-                   --delimiter, ++frame_count);
+              /* Skip primitive function delimiter and one step */
+              for (frame = lone->machine.stack.top - 1 - 2,
+                   frame_count = 1;
+                   frame >= machine->stack.base &&
+                   frame->type != LONE_LISP_MACHINE_STACK_FRAME_TYPE_CONTINUATION_DELIMITER;
+                   --frame, ++frame_count);
 
-              /* Allocate memory and copy stack frames up to the continuation delimiter */
+              /* Recover the handler function */
+              --frame; ++frame_count;
+              handler = frame->as.value;
+
+              /* Copy stack frames up to and including the control primitive's function delimiter */
+              --frame; ++frame_count;
               frames = lone_memory_array(lone->system, 0, frame_count, sizeof(*frames));
-              lone_memory_move(delimiter + 1, frames, frame_count * sizeof(*frames));
+              lone_memory_move(frame, frames, frame_count * sizeof(*frames));
 
               /* Reify current continuation */
               continuation = lone_lisp_continuation_create(lone, frame_count, frames);
 
-              /* Reset stack back to the continuation delimiter */
-              lone->machine.stack.top = delimiter;
-              handler = lone_lisp_machine_pop_value(lone, machine);
+              /* Reset stack back to the control primitive's function delimiter */
+              lone->machine.stack.top = frame + 1;
 
               /* Configure machine to evaluate handler function with value and continuation */
               lone->machine.expression = lone_lisp_list_build(lone, 3, &handler, &value, &continuation);
