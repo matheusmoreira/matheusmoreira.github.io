@@ -1048,29 +1048,46 @@ block article
       }
 
   p.
-    The first thing it does is find the continuation delimiter.
-    Then it copies all the stack frames between it and the top
-    of the stack into a heap allocated buffer. Then it creates
-    a lisp value that just holds this buffer.
+    The first thing it does is find the continuation delimiter
+    by looping over the stack frames and looking for it.
+
+  aside
+    p.
+      A couple of frames are skipped because they're useless:
+      the function delimiter of #[code transfer],
+      and an extraneous machine step that gets generated
+      whenever the machine loops back to evaluate the operand.
+      Only the second step matters when restoring the machine's
+      next step after function application.
+
+  p.
+    It knows that just below the delimiter it can find the
+    handler function that was passed to #[code control].
+    It will be calling that function shortly so it recovers
+    that function into a variable.
+  p.
+    Then it finds the function delimiter of the #[code control]
+    primitive and copies all the stack frames between it
+    and the top of the stack into a heap allocated buffer.
+    Then it creates a lisp value that just holds this buffer.
     #[em That's the continuation.]
   p.
-    Then it unwinds the stack past the continuation delimiter,
+    Then it unwinds the stack to the function delimiter,
     effectively popping off the entire segment of the stack
-    that was just copied into the heap. It knows that just
-    below the delimiter is the handler function so it pops
-    it off the stack. At this point the stack discipline
-    matches the initial state of the #[code control]
-    primitive. We've really gone back in there!
+    that was just copied into the heap. At this point
+    the stack discipline matches the initial state of
+    the #[code control] primitive.
+    We've really gone back in there!
     From the lisp machine's perspective,
     we're inside #[code control] right now,
     and if we return a value it will be
     as though #[code control] had returned it.
   p.
-    The primitive now has the value, the continuation
+    #[code transfer] now has the value, the continuation
     and the handler function. There is but one thing
     left to do: evaluate #[code (handler value continuation)].
     The return value of that expression becomes the result
-    of the #[code control] primitive.
+    of #[code control].
   p.
     I could stop here and call this an exceptions mechanism.
     If I deleted the continuation capture code, it #[em would]
