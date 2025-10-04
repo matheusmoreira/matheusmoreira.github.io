@@ -83,7 +83,7 @@ block article
           struct lone_lisp_value vector, f, entry;
           size_t i;
 
-          /* unpack and check arguments... */
+          /* Unpack and check arguments... */
 
           LONE_LISP_VECTOR_FOR_EACH(entry, vector, i) {
               arguments = lone_lisp_list_build(lone, 1, &entry);
@@ -556,7 +556,7 @@ block article
           switch (step) {
           case 0: /* Initialize and begin iteration */
 
-              /* unpack and check arguments... */
+              /* Unpack and check arguments... */
 
               i = 0;
 
@@ -973,8 +973,8 @@ block article
           case 1: /* Body evaluated */
 
               lone_lisp_machine_pop_continuation_delimiter(lone);
-              lone_lisp_machine_pop_value(lone, machine); /* handler */
-              lone_lisp_machine_push_value(lone, machine, machine->value); /* return value */
+              lone_lisp_machine_pop_value(lone, machine); /* Handler */
+              lone_lisp_machine_push_value(lone, machine, machine->value); /* Return value */
               return 0;
 
           default:
@@ -1026,7 +1026,7 @@ block article
               lone->machine.stack.top = delimiter;
               handler = lone_lisp_machine_pop_value(lone, machine);
 
-              /* configure machine to evaluate handler function with value and continuation */
+              /* Configure machine to evaluate handler function with value and continuation */
               lone->machine.expression = lone_lisp_list_build(lone, 3, &handler, &value, &continuation);
               lone->machine.step = LONE_LISP_MACHINE_STEP_EXPRESSION_EVALUATION;
 
