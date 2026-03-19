@@ -42,7 +42,7 @@ block article
     While it is often possible to interface with the kernel
     directly, the kernel interface is unstable and subject to
     change. Software that insists on using that interface
-    might simply stop working if or rather  #[em when] it changes.
+    might simply stop working if — or rather #[em when] — it changes.
 
   figure
     blockquote(cite='https://news.ycombinator.com/item?id=28413001').
