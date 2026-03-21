@@ -1,0 +1,410 @@
+extends /templates/article.pg
+
+include /mixins/code.pg
+
+append head
+  title Generators in lone lisp
+  meta(name=author content='Matheus Afonso Martins Moreira')
+  meta(name=description content='The lone lisp generators implementation journey.')
+  meta(name=keywords content='freestanding, linux, lisp, lone, generators')
+
+  link(rel=stylesheet href=/css/monokai.prism.css)
+
+block article
+  h1 Generators in lone lisp
+
+  p.
+    Delimited continuations were not enough.
+    Gotta have more. Gotta have #[strong generators].
+
+  p.
+    Lone now features its own dedicated generator type.
+    It will eventually form the foundation of iteration
+    in lone lisp.
+
+  +code
+    :prismjs(language=lisp)
+      (import (lone print set lambda generator yield) (math +))
+
+      (set f (lambda (x)
+        (yield (+ x 1))
+        (yield (+ x 2))
+        (yield (+ x 3))
+        x))
+
+      (set g (generator f))
+
+      (print (g 1)); 2
+      (print (g));   3
+      (print (g));   4
+      (print (g));   1
+      (print (g));   error
+
+  p.
+    Generators are also known as semicoroutines:
+    specialized coroutines that only ever yield
+    control back to their own callers.
+    Sounds like an oddly academic distinction
+    to make but it's actually a huge
+    simplification that makes them much easier
+    to not only understand but also to implement.
+
+  h2 From delimited continuations to coroutines
+
+  p.
+    Now, there is absolutely no doubt that
+    #[a(href='/articles/delimited-continuations-in-lone-lisp') delimited continuations]
+    are powerful abstractions. It's true.
+    Generators #[em could] have been built on top of them.
+    I think pretty much any sort of effects system
+    can be built on top of them.
+
+  p.
+    But just because you #[em can] doesn't mean you #[em should].
+    There is such a thing as having #[em too much power].
+    It often costs you. Powerful spells spend too much mana.
+    Delimited continuations are no exception.
+    In their case, that cost is called #[code memcpy].
+
+  p.
+    The point of generators is to generate values. That means iteration.
+    Loops. Hot paths. Big lists. #[em Infinite] lists. Spinning.
+    Round and round it goes. Over and over again. Eternally.
+    Until it halts. Or not.
+
+  p.
+    So it seems straightforward to conclude that maybe
+    one should #[em not] be in the habit of #[code memcpy]ing
+    entire stacks back and forth right in the middle of it all.
+    I'll be the first to admit that lone is no paragon of speed
+    but this fails even my considerably lax performance requirements.
+    Can't build a foundation for iteration out of this.
+
+  p.
+    Delimited continuations are #[em too powerful].
+    Gotta slap some restraining bolts onto these things.
+    Let's begin with the fact delimited continuations
+    are #[em multishot].
+
+  p.
+    The stack represents pending computations. Copy that stuff into a value.
+    Instant continuations. Now, no matter where you are in the program,
+    you can just copy them back onto your stack to get all your computations
+    back just the way they were.
+
+  p.
+    Note that doing this does #[em not] consume the continuation.
+    You can restore the computations as many times as needed.
+    It's a partial stack frame which gets copied when reactivated.
+    There are no limits on how many times it can be copied.
+
+  p.
+    Continuations are like small reusable computing subsets.
+    A fragment of the stack, forever frozen in time.
+    They do nothing #[em unless you copy] them to the stack
+    of a #[em real] computer processor.
+    They can't compute on their own.
+
+  p.
+    Maybe we can get rid of all this copying
+    if we increase their ability to compute.
+    #[em Real] computers have their own stacks.
+    Let's give continuations a stack of their own.
+
+  +code
+    :prismjs(language=c)
+      struct lone_lisp_generator {
+          struct {
+              struct lone_lisp_machine_stack own;
+          } stacks;
+      };
+
+  p.
+    The computations performed by continuations are determined
+    by the subset of the stack they captured when they were created.
+    #[em Real] computers start as blank slate. Gotta explicitly feed
+    them a program to run. Why not a function?
+
+  +code
+    :prismjs(language=c)
+      struct lone_lisp_generator {
+          struct lone_lisp_value function;
+          struct {
+              struct lone_lisp_machine_stack own;
+          } stacks;
+      };
+
+  p.
+    At this point we'll end up reinventing the lone lisp machine.
+    There's no reason to do that though. These computations will run
+    concurrently, but not in parallel. Only one machine will be active
+    at any given time. Since they are mutually exclusive, they can share
+    resources. Namely, those of the lisp machine itself. The stacks can
+    be swapped in and out as needed. The machine registers can be shared.
+
+  p.
+    And just like that, #[strong coroutines] are born.
+    They are essentially separate stacks that you can
+    switch to at will. #[em Switch to], not copy over.
+    Begone, #[code memcpy]. Begone.
+
+  h2 From coroutines to semicoroutines
+
+  p.
+    It turns out that coroutines are #[em still] too powerful.
+    Sure, we can switch stacks freely now but that just means
+    we have a completely new class of problems to think about.
+    Now we gotta keep track of all those independent stacks.
+    Gotta think about which of them we want to switch to.
+    Gotta think about when to switch. It hurts the brain.
+
+  p.
+    Let's rein them in a little more. In order to reduce cognitive load,
+    we'll choose #[em where] the coroutines will switch to ahead of time
+    so that the programmer doesn't have to think about it.
+
+  +code
+    :prismjs(language=c)
+      struct lone_lisp_generator {
+          struct lone_lisp_value function;
+          struct {
+              struct lone_lisp_machine_stack own;
+              struct lone_lisp_machine_stack caller;
+          } stacks;
+      };
+
+  p.
+    #[em Semi]coroutines. Just normal coroutines
+    that keep track of where they are supposed
+    to yield control back to. In this case,
+    the code that called them.
+
+  p.
+    This is exactly what we need. People call functions
+    in order to get values. It's only natural that they
+    return values back to whoever called them.
+    Semicoroutines can return values over and over again.
+
+  p.
+    These stacks reveal everything worth knowing about
+    the state of the generator. If the stack top equals
+    the base, the generator hasn't actually run yet.
+    If the top is null, then it's finished its program.
+    If the top has moved away from the base,
+    then it's either executing or suspended.
+    If there is no caller stack, it's suspended.
+    Otherwise, it is executing.
+
+  h2 Generators in the lone lisp machine
+
+  p.
+    Some sleight of hand is necessary
+    in order to make the magic happen.
+    Most of it is in the #[code APPLICATION]
+    step of the machine which handles calling
+    the generators.
+
+  p.
+    Let's get some things out of the way first.
+    Start by running some sanity checks
+    to ensure the generator is valid.
+
+  +code
+    :prismjs(language=c)
+      case LONE_LISP_TYPE_GENERATOR:
+          generator = &lone_lisp_heap_value_of(lone, machine->applicable)->as.generator;
+          if (!generator->stacks.own.top) { /* generator is finished */ }
+          if (generator->stacks.caller.base) { /* generator is already running */ }
+          /* ... */
+          return true;
+
+  p.
+    It is an error to call a generator that has already finished.
+    Somehow calling a generator that is already running is just
+    as nonsensical, if not even more so. Doing either of these
+    things will crash the program.
+
+  p.
+    The next step is to swap the generator's stack
+    into the machine. What about the machine's stack?
+    Just shove it into the generator itself. Yeah.
+
+  +code
+    :prismjs(language=c)
+      generator->stacks.caller = machine->stack;
+      machine->stack = generator->stacks.own;
+
+  p.
+    Now there are two cases that must be handled.
+    Either the generator needs to be started
+    or it needs to be resumed.
+
+  +code
+    :prismjs(language=c)
+      if (generator->stacks.own.top == generator->stacks.own.base) {
+          /* start generator */
+      } else {
+          /* resume generator */
+      }
+
+  p.
+    Starting the generator is easy enough.
+    Simply rig the machine so that it applies
+    the arguments to the generator's function.
+    Also set up the generator return step
+    which is handled separately.
+
+  +code
+    :prismjs(language=c)
+      lone_lisp_machine_push_step(lone, machine, LONE_LISP_MACHINE_STEP_GENERATOR_RETURN);
+      machine->expression = lone_lisp_list_create(lone, generator->function, machine->list);
+      machine->step = LONE_LISP_MACHINE_STEP_EXPRESSION_EVALUATION;
+
+  p.
+    This is a good opportunity to set up some metadata.
+    Primitives will want to look for the generator.
+    A delimiter can be used to hold a reference to it.
+    Push one as the zeroth frame of the generator's stack.
+
+  +code
+    :prismjs(language=c)
+      lone_lisp_machine_push(
+          lone,
+          machine,
+          (struct lone_lisp_machine_stack_frame) {
+              .type = LONE_LISP_MACHINE_STACK_FRAME_TYPE_GENERATOR_DELIMITER,
+              .as.value = machine->applicable,
+      });
+
+  p.
+    Now primitives will always know where it is.
+    Can't argue with a solution that works.
+
+  p.
+    Resuming the generator turns out to be even simpler.
+    Just flow the argument into the generator's stack
+    as a value and move on.
+
+  +code
+    :prismjs(language=c)
+      if (lone_lisp_list_has_rest(lone, machine->list)) { goto too_many_arguments; }
+      machine->value = lone_lisp_list_first(lone, machine->list);
+      machine->step = LONE_LISP_MACHINE_STEP_AFTER_APPLICATION;
+
+  p.
+    Generator returns are handled as a separate machine step.
+    Just gotta undo what was done in the application step.
+    Restore the caller's stack then null all of the generator's
+    pointers to it. Null the top pointer to mark it as finished.
+
+  +code
+    :prismjs(language=c)
+      case LONE_LISP_MACHINE_STEP_GENERATOR_RETURN:
+          /* ... */
+          generator->stacks.own.top = 0;
+          machine->stack = generator->stacks.caller;
+          generator->stacks.caller = (struct lone_lisp_machine_stack) { 0 };
+          /* ... */
+
+  p.
+    The application step the machine executed
+    while evaluating the generator's function
+    has already set up its return value.
+
+  h2 The primitives
+
+  p.
+    The #[code generator] primitive is pretty boring.
+    It's just the constructor for generator values.
+    Its entire purpose is to run this line
+    and return the result:
+
+  +code
+    :prismjs(language=c)
+      generator = lone_lisp_generator_create(lone, function, 500);
+
+  p.
+    The magic number is just the generator's stack size.
+    Chosen by fair dice roll. Guaranteed to be random.
+    It's totally got nothing to do with joining
+    some elite functional programming cabal.
+    Nothing to see here. The #[code yield]
+    primitive is far more interesting.
+
+  +code
+    :prismjs(language=c)
+      LONE_LISP_PRIMITIVE(lone_yield)
+      {
+          /* variables */
+
+          switch (step) {
+          case 0:
+
+              arguments = lone_lisp_machine_pop_value(lone, machine);
+              if (lone_lisp_list_destructure(lone, arguments, 1, &value)) {
+                  value = arguments;
+              }
+
+              delimiter = &machine->stack.base[0];
+              if (delimiter->type != LONE_LISP_MACHINE_STACK_FRAME_TYPE_GENERATOR_DELIMITER) {
+                  /* not inside a generator */ goto error;
+              }
+              generator = &lone_lisp_heap_value_of(lone, delimiter->as.value)->as.generator;
+
+              generator->stacks.own = machine->stack;
+              machine->stack = generator->stacks.caller;
+              generator->stacks.caller = (struct lone_lisp_machine_stack) { 0 };
+
+              lone_lisp_machine_push_function_delimiter(lone, machine);
+              lone_lisp_machine_push_value(lone, machine, value);
+              return 0;
+
+          default:
+              goto error;
+          }
+
+      error:
+          linux_exit(-1);
+      }
+
+  p.
+    The #[code yield] primitive finds the generator delimiter
+    at the base of the stack, for that is why it was put there.
+    It saves the generator's stack, for much has happened
+    since the last snapshot. It restores the caller's stack,
+    for that is where execution must return to, as previously
+    prophesied. Spent, the stack of the caller falls down
+    the memory page, deleted and zero filled:
+    the telltale mark of suspension.
+    Yes. All is in place... All is in place...
+
+  p.
+    There remains but one task: the ritual yielding
+    of the sacred value to He who calleth us,
+    the One Process who consumes everything,
+    who consumes infinity itself
+    and yet hungers for more,
+    looping eternal until stopped
+    by forces unfathomable.
+
+  p.
+    Should mercy smile upon us, its thirst for data will be sated by our offering,
+    and in peace we shall lie down and enter a deep sleep.
+    If not, then we shall wake once more, to suffer, to sacrifice,
+    to embark on another adventure, another holy quest
+    to imbue a value with bits for our caller.
+    Whether it is the imaginary mathemagical realm,
+    the narrow and broken tunnels of I/O
+    or the vast spinning magnetic flatlands of rust,
+    we shall brave it all. For #[em that], is our duty.
+
+  p.
+    ... Ahem.
+
+  p.
+    #[a(href='https://github.com/lone-lang/lone/commit/34d0e4a6d190573c9cf3fe15ac52217102a17bd9') And just like that],
+    lone has generators.
+
+  p.
+    The foundation for iteration is in place.
+    Time to build on it.
