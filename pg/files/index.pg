@@ -11,14 +11,14 @@ block body
     They say getting started is the hardest part, so I'm glad that's over.
     Now what shall I write about? I have some ideas...
   nav
-    ol
-      li
+    ol#index
+      li(published-at="2026-03-21")
         a(href='/articles/generators-in-lone-lisp') Generators in lone lisp
-      li
+      li(published-at="2025-10-03")
         a(href='/articles/delimited-continuations-in-lone-lisp') Delimited continuations in lone lisp
-      li
+      li(published-at="2023-11-28")
         a(href='/articles/self-contained-lone-lisp-applications') Self-contained Linux applications with lone lisp
-      li
+      li(published-at="2023-09-03")
         a(href='/articles/managing-dotfiles-with-make') Managing dotfiles with Make
-      li
+      li(published-at="2023-02-07")
         a(href='/articles/linux-system-calls') Linux system calls

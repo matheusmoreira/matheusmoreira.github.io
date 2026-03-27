@@ -70,6 +70,21 @@ h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
 }
 
+ol#index {
+  list-style-type: none;
+  margin-left: 10ch;
+  padding-left: 2ch;
+
+  li {
+    padding-left: 2ch;
+  }
+
+  li::marker {
+    content: attr(published-at);
+    font-family: var(--monospace-font);
+  }
+}
+
 pre {
   overflow-x: auto;
   margin-left: 2ch;
