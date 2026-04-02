@@ -12,6 +12,8 @@ block body
     Now what shall I write about? I have some ideas...
   nav
     ol#index
+      li(published-at="2026-04-01")
+        a(href='/articles/babys-second-garbage-collector') Baby’s Second Garbage Collector
       li(published-at="2026-03-21")
         a(href='/articles/generators-in-lone-lisp') Generators in lone lisp
       li(published-at="2025-10-03")

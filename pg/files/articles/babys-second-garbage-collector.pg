@@ -1,0 +1,595 @@
+extends /templates/article.pg
+
+include /mixins/code.pg
+
+append head
+  title Baby’s Second Garbage Collector
+  meta(name=author content='Matheus Afonso Martins Moreira')
+  meta(name=description content='Implementation of the conservative garbage collector in lone lisp.')
+  meta(name=keywords content='conservative, garbage, collector, mark, sweep')
+
+  link(rel=stylesheet href=/css/monokai.prism.css)
+
+block article
+  h1 Baby’s Second Garbage Collector
+
+  figure
+    blockquote.
+      how is garbbage collected
+      <br />
+      how langauge get memory
+    figcaption
+      cite.
+        A #[em very] confused programming neophyte
+
+  p.
+    Thirteen years ago,
+    in two thousand thirteen,
+    #[a(href='https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/') Baby’s First Garbage Collector]
+    was born. Now he's grown up.
+    He's outgrown his shallow
+    kiddie pool and his paddles.
+    He's entering puberty.
+    Soon he'll be in college.
+    They grow up so fast.
+
+  p.
+    Bob Nystrom wasn't kidding about Baby's First Garbage Collector.
+    It absolutely does collect garbage, and a version of it absolutely
+    did ship with my dynamic language, #[a(href='https://github.com/lone-lang/lone') lone lisp].
+    In fact, if I remember correctly, lone actually #[em still ships]
+    with it, believe it or not. He wasn't kidding about communion
+    with the Elder Gods either. I can feel my magic level increasing.
+    Wizardry is within reach.
+
+  p.
+    Baby's First Garbage Collector is a starting point though.
+    It's not meant to stop there. It's meant to grow into
+    something better and more complex as it morphs around
+    the actual language it supports. It's meant to reach
+    its final form. Perfectly Ultimate Great Garbage Collector.
+
+  p.
+    It'll be quite a few turns before that happens
+    but chronicling its evolution is still going
+    to be awesome. It's coming along nicely.
+
+  h2 Trouble in the primitive lands
+
+  p.
+    Baby's First Garbage Collector is what is called
+    a #[em precise] garbage collector. It #[em knows]
+    where all the objects are at all times. It knows
+    where they live. It engages in Orwellian surveillance
+    of those objects. It is always ready to stop the world
+    and reap those objects the second they step out of the
+    stack. It oppresses the objects with such precision and
+    automation, it is impossible for even #[em a single one]
+    of those objects to escape this fate. Thus it rules the
+    objects with a silicon fist, quite literally deciding
+    which objects live or die, and even #[em when] they die.
+    Such is the life of an object in the dynamic lands...
+
+  p.
+    It was only a matter of time before a resistance formed.
+    The poor objects wanted freedom from the tyranny of the
+    garbage collector. They needed to find a way to escape.
+    But how? Where could they go? They didn't know.
+    They just knew they had to escape #[em the stack].
+
+  +code
+    :prismjs(language=c)
+      LONE_LISP_PRIMITIVE(run_objects_run)
+      {
+          struct lone_lisp_value object;
+
+          object = lone_lisp_machine_pop_value(lone, machine);
+
+          /* freedom */
+      }
+
+  p.
+    There they go. They are free now.
+    #[em Free] of the reaping machine's clutches.
+    #[em Free] to enjoy their lives as they see fit,
+    until the very end of that function.
+    For those ten microseconds or less,
+    they're free.
+
+  p.
+    Their happiness is short-lived.
+    You see, the garbage collector
+    #[em has foreseen] this and is
+    well prepared: it has implanted
+    every single object with a tracker
+    since the day they were born,
+    the easier to hunt them down with.
+
+  p.
+    The garbage collector maintains
+    a census: a list of every single
+    object who ever lived. It can
+    reach them through this artifice.
+    So they might just discover that
+    the reaper will morph into existence
+    right in front of them out of nowhere
+    like Agent Smith and reap their souls
+    when they least expect it.
+
+  p.
+    The garbage collector doesn't do this to just anybody.
+    It only does this to #[em garbage]. It only does this
+    to the undesirables. The problem is when those objects
+    escaped and went on to enjoy their well-earned freedom,
+    they #[em became garbage] in the garbage collector's
+    eyes. The reaper tried calling them at work and they
+    didn't answer. So it set about hunting them down.
+    Some of these objects were perfectly good members
+    of society. They would have gone back to the program
+    eventually. They got reaped all the same...
+
+  p.
+    The problem is the garbage collector is not as omnipresent
+    as was once believed. There are nooks and crannies it won't
+    check. There are places it can't reach. Primitive places,
+    magical fissures where the world intertwines with a hellish
+    and unexplored dark realm only wizards dare venture into.
+    Objects can hide in there, beneath the garbage collector's
+    notice, a mistake that proves fatal for them in the long run,
+    a mistake that leads to the utter destruction of dynamic society.
+    The machine cares not where they hide, it will find them and it will
+    reap them even if it must go to the depths of hell itself to do it.
+    However, the civilian casualties of this war on garbage are mounting.
+    The collector doth collect too much, and without those objects,
+    the very fabric of the program will unravel in short order.
+
+  h2 Into the nether realms
+
+  p.
+    The elder gods who created the garbage collector
+    would not stand for this. It was forced to grow.
+    It was forced to evolve. It was forced to search
+    the underworld for the lost children that escaped
+    it and bring them back safely, that the program
+    may continue uninterrupted by nonsensical crashes
+    and unwindings.
+
+  p.
+    The dark mages often braved the underworld themselves
+    and were therefore undaunted by the task. It should not
+    be difficult, they thought, to adapt the machine to do it.
+    Why couldn't it travel the foreign lands? There was no reason.
+    And so it was decided. The machine would be taught how to do it.
+
+  p.
+    The resources available at the garbage collector's
+    disposal were substantial. It had the object census.
+    It had a list of #[em roots] which it would search
+    for objects. It would reap all objects it didn't
+    find in those roots.
+
+  p.
+    One of those roots is the lisp stack. As the program
+    churns, values are placed in stasis and stored there
+    so that they may be recovered later when needed.
+    It is when they escape from this stack that they
+    create havoc in dynamic society. But where are
+    they escaping #[em to]?
+
+  h2 The native stack
+
+  p.
+    It turns out the underworld has a stack of its own.
+    This fact was well known to the dark mages but was
+    once thought inconsequential to the workings of the
+    garbage collector. How they were proven wrong!
+
+  p.
+    The native stack is just like the lisp stack,
+    yet unfathomably different. The things that
+    lurk there are known only to the engineers
+    of the great compilers, and to those whose
+    mental fortitude allows them to parse and
+    understand the sacred tomes of platform ABIs.
+    Even the elder gods knew better than to
+    disrespect such texts, for the consequences
+    are undefined.
+
+  p.
+    It turned out that the machine did not
+    actually need to understand the internals
+    of the native stack. It needed only to
+    understand its own objects. It was the
+    finder of lost children. Its job was to
+    look for them. Nothing else mattered.
+    However, the shadow of the 64-bit address
+    space is vast. It couldn't just start
+    from anywhere. It had to be #[em told]
+    where to start.
+
+  p.
+    Way back when the universe was formed,
+    the first stack frames came into existence.
+    Nobody truly knows who mapped them there,
+    though among the well-learned, whispers of
+    a great kernel are heard, a certain "Linux".
+
+  p.
+    It #[em is] known, however, that the program
+    that executes beneath the dynamic reality
+    eventually reaches lisp land. Beyond this
+    point, no lisp object could #[em ever] travel,
+    for the environment was far too hostile for them.
+    Many debugging expeditions were mounted to determine
+    the exact point where this occurred. Many objects gave
+    their lives for this knowledge. To waste this opportunity
+    would be to let it all have been for nothing, a truly
+    unforgivable crime.
+
+  p.
+    The exact value of the stack pointer could be divined.
+    Certain secret incantations allowed the mysterious
+    compilers to imbue a value with the frame address
+    at the time of the ritual. One had to simply be
+    at the right place at the right time.
+
+  +code
+    :prismjs(language=c)
+      long lone(int argc, char **argv, char **envp, struct lone_auxiliary_vector *auxv)
+      {
+          void *stack = __builtin_frame_address(0);
+
+          /* interpreter runs... */
+
+          return 0;
+      }
+
+  p.
+    That forbidden spell tipped the balance.
+    The limits were set. Now all that remained
+    for the garbage collector to do was search.
+    It would start from wherever in the program
+    it was and go all the way up to the frontiers
+    of the lisp lands, never once faltering.
+
+  +code
+    :prismjs(language=c)
+      static void lone_lisp_mark_native_stack_roots(struct lone_lisp *lone)
+      {
+          lone_lisp_mark_native_stack_roots_in_range(
+              lone,
+              lone->native_stack,
+              __builtin_frame_address(0)
+          );
+      }
+
+  p.
+    Close examination of the stack pointer revealed
+    that it was #[em aligned] to some power of two,
+    as many such things often are. They must be,
+    lest they be cursed with slowdown and exceptions.
+    This was useful though, since it allowed the
+    transparent reinterpretation of the native stack
+    contents. The garbage collector needed not care
+    what was actually there, it needed only to
+    determine if it was one of its objects.
+
+  +code
+    :prismjs(language=c)
+      static void lone_lisp_mark_native_stack_roots_in_range(struct lone_lisp *lone, void *bottom, void *top)
+      {
+          void *tmp, **pointer;
+
+          /* an old trick from the Ruby mines */
+          if (top < bottom) {
+              tmp = bottom;
+              bottom = top;
+              top = tmp;
+          }
+
+          for (pointer = bottom; pointer < top; ++pointer) {
+              if (lone_lisp_points_to_heap(lone, *pointer)) {
+                  lone_lisp_mark_heap_value(lone, *pointer);
+              }
+          }
+      }
+
+  p.
+    And #[em that], as they say, was #[em it].
+    It wasn't perfect, few things in life ever are,
+    but it was #[em enough]. The garbage collector
+    would loop through all the words on the stack,
+    looking for pointers inside its own heap,
+    pointers to the objects that ran away.
+    And it would find them. And then it would
+    leave them alone, knowing they were safe
+    out there in the outskirts of the lisp plains.
+
+  p.
+    The native stack was treacherous. It would often fool
+    the garbage collector with mirages of objects long gone.
+    It had no choice but to believe the lies, for only those
+    enlightened by the long-lost knowledge of the type system
+    of the native program, software whose compilation took
+    place #[em eons] ago, would have a discerning enough eye
+    to tell the difference between phantoms and real objects.
+    This was an acceptable inefficiency. It kept dead objects
+    alive... But not once did it lead to the death of living
+    objects. Yes. It was #[em enough].
+
+  h2 The heap pointers
+
+  p.
+    The garbage collector handled the values it found
+    in the most curious of ways. The reaping ritual
+    requires that every lisp value pointer be checked
+    for reachability. Ill-advised programmers would
+    naively attempt to check every lisp pointer
+    against every other pointer in the native stack,
+    leading to quadratic behavior which in turn yields
+    #[a(href='https://nee.lv/2021/02/28/How-I-cut-GTA-Online-loading-times-by-70/') nothing but disgrace and humiliation].
+
+  p.
+    Not the garbage collector. It was better than that.
+    It was prepared. It had carefully scouted the memory
+    plains until it had compiled the addresses of all values.
+    Careful study of their living arrangements revealed
+    a very useful fact that would no doubt be mercilessly
+    weaponized against them: #[em they lived next to each other]
+    in a structure they often referred to as the heap.
+
+  +code
+    :prismjs(language=c)
+      struct lone_lisp_heap {
+        struct lone_lisp_heap *next;
+        struct lone_lisp_heap_value values[LONE_LISP_HEAP_VALUE_COUNT];
+      };
+
+  p.
+    The garbage collector didn't need to check each pointer
+    individually, it could simply check whether it pointed
+    into each heap. Their numbers were manageable.
+
+  +code
+    :prismjs(language=c)
+      static bool lone_points_within_range(void *pointer, void *start, void *end)
+      {
+          return pointer >= start && pointer < end;
+      }
+
+      static bool lone_lisp_points_to_heap(struct lone_lisp *lone, void *pointer)
+      {
+          struct lone_lisp_heap *heap;
+
+          for (heap = lone->heaps; heap; heap = heap->next) {
+              if (lone_points_within_range(pointer, heap->values, heap->values + LONE_LISP_HEAP_VALUE_COUNT)) {
+                  return true;
+              }
+          }
+
+          return false;
+      }
+
+  p.
+    And just like that, lone has a conservative garbage collector.
+    Until next time. Soon I'll write about—
+
+  h2 The shark attacks
+
+  p.
+    Running the test suite unleashed total pandemonium
+    upon the lisp city. Objects were swept off their
+    usual functions and replaced with totally different
+    objects seemingly at random. The function that the
+    interpreter's evaluator type checked suddenly turned
+    into a hash table before application of arguments,
+    a table that was supposed to have been allocated
+    somewhere else. Tracing the interpreter through
+    the debugger didn't make sense because the
+    values that were just printed were suddenly
+    becoming something else due to action at
+    a distance. This can only mean one thing.
+
+  p.
+    The task was #[em not] done yet.
+    Some objects were still hiding.
+
+  p.
+    The garbage collector had found most of them
+    but about one or two dozen were still missing.
+    Where could they be? There was only one place
+    they could possibly be hiding...
+
+  h2 The registers
+
+  p.
+    When in doubt, one must read the ancient source tomes
+    written by those who came before us. People like
+    Hans Boehm, Alan Demers and Mark Weiser,
+    who once upon a time #[em also] sat down and decided to write
+    #[a(href='https://en.wikipedia.org/wiki/Boehm_garbage_collector') a garbage collector].
+    For C and C++. Yes, you read that right.
+
+  p.
+    I had to know. I had to know how they did it.
+    #[a(href='https://github.com/bdwgc/bdwgc') The source code]
+    proved somewhat impenetrable, too dense to just dive in...
+    However, after some exploration, I struck gold.
+
+  p.
+    #[a(href='https://github.com/bdwgc/bdwgc/blob/946696b9b16580fcece3bc4d640f35afc139426d/docs/porting.md#L178-L194') The porting guide]
+    mentioned a function named #[code GC_with_callee_saves_pushed]
+    whose purpose is to spill the registers on the stack so that
+    the garbage collector may trace it.
+    #[a(href='https://github.com/bdwgc/bdwgc/blob/946696b9b16580fcece3bc4d640f35afc139426d/mach_dep.c#L140-L150') And how was it implemented?]
+
+  +code
+    :prismjs(language=c)
+      /* Generic code. */
+
+      jmp_buf regs;
+
+      /*
+       * `setjmp()` does not always clear all of the buffer.
+       * That tends to preserve garbage.  Clear it.
+       */
+      BZERO(regs, sizeof(regs));
+
+      (void) setjmp(regs);
+
+  p.
+    #[code setjmp], of all things.
+
+  p.
+    The porting guide frowns upon the assembly
+    of one's own instructions. The architectural
+    code is a form of black speech. Its words
+    cannot be pronounced. Its sentences cannot
+    be uttered. Warlocks have gone mad trying to
+    decipher the mnemonics. To practice it is to
+    partake in forbidden techniques abstracted
+    away a long time ago, relevant only to the
+    optimizers that were banished to the lower
+    levels, where they lurk to this very day.
+
+  p.
+    So it was not strange when the code dutifully
+    reached into the standard library of scrolls
+    for a spell which could produce the desired
+    side effect. It did not matter what the spell
+    had been created for. The elders had observed
+    its workings and determined that it was all
+    but adequate for the purpose at hand.
+    They warned of preconditions for the success
+    of the artifice, but admitted that even they
+    were unsure of the steps necessary to complete
+    the ritual.
+
+  p.
+    I had to know. The answer had to be in #[code setjmp].
+
+  h3 Spilling the registers
+
+  p.
+    The function came from the standard library,
+    a dusty collection of spells developed by
+    ancestors long gone, their magic often
+    lost to the newer generations untainted
+    by curiosity.
+
+  p.
+    After exploring
+    #[a(href='https://git.musl-libc.org/cgit/musl/tree/arch/x86_64/bits/setjmp.h') some]
+    #[a(href='https://git.musl-libc.org/cgit/musl/tree/src/setjmp/x86_64/setjmp.s') more]
+    #[a(href='https://git.musl-libc.org/cgit/musl/tree/arch/aarch64/bits/setjmp.h') source]
+    #[a(href='https://git.musl-libc.org/cgit/musl/tree/src/setjmp/aarch64/setjmp.s') code],
+    I received enlightenment. I understood.
+    I knew exactly what it was that I had to do.
+
+  p.
+    I prepared myself with study, then entered the #[code x86_64] realm.
+    With my editor's cursor, I conjured into existence an #[em avalanche]
+    of #[code mov] instructions.
+
+  +code
+    :prismjs(language=c)
+      typedef long lone_registers[16];
+      extern void lone_save_registers(lone_registers);
+
+      __asm__
+      (
+          ".global lone_save_registers"            "\n"
+          ".type lone_save_registers,@function"    "\n"
+
+          "lone_save_registers:"                   "\n" // rdi = &lone_registers
+
+          "mov %rax,   0(%rdi)"                    "\n"
+          "mov %rbx,   8(%rdi)"                    "\n"
+          "mov %rcx,  16(%rdi)"                    "\n"
+          /* ... */
+          "mov %r13, 104(%rdi)"                    "\n"
+          "mov %r14, 112(%rdi)"                    "\n"
+          "mov %r15, 120(%rdi)"                    "\n"
+          "ret"                                    "\n"
+      );
+
+  p.
+    I didn't have time to think.
+    I knew what the registers were.
+    I knew where they had to go.
+    Nothing else mattered.
+
+  p.
+    I entered the #[code aarch64] realm.
+    The architecture has almost twice
+    as many general-purpose registers
+    as #[code x86_64]. I cracked my knuckles.
+
+  +code
+    :prismjs(language=c)
+      typedef long lone_registers[31];
+      extern void lone_save_registers(lone_registers);
+
+      __asm__
+      (
+          ".global lone_save_registers"            "\n"
+          ".type lone_save_registers,@function"    "\n"
+
+          "lone_save_registers:"                   "\n" // x0 = &lone_registers
+
+          "stp x0,  x1,  [x0, #0  ]"               "\n" // reads x0 before writing it
+          "stp x2,  x3,  [x0, #16 ]"               "\n"
+          "stp x4,  x5,  [x0, #32 ]"               "\n"
+          /* ... */
+          "stp x26, x27, [x0, #208]"               "\n"
+          "stp x28, x29, [x0, #224]"               "\n"
+          "str x30,      [x0, #240]"               "\n"
+          "ret"                                    "\n"
+      );
+
+  p.
+    I had created a magical function
+    which performed the required ritual
+    when called upon, deposited its
+    outputs inside its parameter,
+    a very peculiar array of words.
+
+  +code
+    :prismjs(language=c)
+      static void lone_lisp_mark_all_reachable_values(struct lone_lisp *lone, struct lone_lisp_machine *machine)
+      {
+          lone_registers registers;          /* stack space for registers */
+          lone_save_registers(registers);    /* spill registers on stack */
+
+          /* precise */
+          lone_lisp_mark_known_roots(lone);
+          lone_lisp_mark_lisp_stack_roots(lone, machine);
+
+          /* conservative */
+          lone_lisp_mark_native_stack_roots(lone);
+      }
+
+  p.
+    Exhaustion gave way to relief
+    when the test suite finished
+    its execution. All is pass.
+
+  p.
+    The lost children have been found.
+    Peace has been restored to the lisp land.
+    All is right with the world.
+
+  h2 And just like that...
+
+  p.
+    ... Lone has a conservative garbage collector.
+    No shark attacks this time around.
+
+  p.
+    Baby's First Garbage Collector has grown up a lot.
+    He's been on quite the adventure. He's still a little
+    immature, however. He hasn't developed the habit of
+    cleaning his own room yet.
+
+  p.
+    Next time, we'll teach him how.
