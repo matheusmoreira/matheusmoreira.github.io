@@ -13,10 +13,10 @@ append head
 block article
   h1 Self-contained Linux applications with lone lisp
   p.
-    I started #[a(href='https://github.com/lone-lang/lone') the lone lisp project]
+    I started @(https://github.com/lone-lang/lone the lone lisp project)
     to create a lisp language and environment exclusively for Linux.
     I built into it support for arbitrary
-    #[a(href=/articles/linux-system-calls) Linux system calls]
+    @(/articles/linux-system-calls Linux system calls)
     so that it would be possible to implement any program
     without need for any external dependencies and so that
     every Linux feature would be available to programmers.
@@ -189,7 +189,7 @@ block article
     These include things like processor architecture
     and capabilities, current user and group IDs,
     some random bytes, the location of the
-    #[a(href='https://www.man7.org/linux/man-pages/man7/vdso.7.html') vDSO],
+    @(https://www.man7.org/linux/man-pages/man7/vdso.7.html vDSO),
     the system's page size...
 
   p.
@@ -217,7 +217,7 @@ block article
 
   p.
     The table is just a contiguous array of
-    #[a(href='https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#Program_header') ELF program header structures].
+    @[elf-program-header ELF program header structures].
     Given this pointer, all the program has to do
     is scan the table and find the correct entry.
     One does not simply search for #[code LOAD] entries, however.
@@ -371,7 +371,7 @@ block article
     I was convinced it would be found in the linker.
   p.
     So I started learning
-    #[a(href='https://sourceware.org/binutils/docs/ld/Scripts.html') linker script].
+    @(https://sourceware.org/binutils/docs/ld/Scripts.html linker script).
     Turns out it has a #[code PHDRS] command
     which is exactly what I needed but I couldn't
     figure out how to use it. I just kept getting
@@ -380,16 +380,16 @@ block article
     to simply #[em ask] for this feature instead.
   p.
     So I
-    #[a(href='https://sourceware.org/pipermail/binutils/2023-November/130640.html') emailed]
+    @[binutils-email emailed]
     the GNU binutils mailing list...
     Then I created an
-    #[a(href='https://github.com/llvm/llvm-project/issues/72386') LLVM issue]...
+    @[llvm-issue LLVM issue]...
 
   p.
     Then I opened a #[code mold] issue.
     The maintainer immediately understood
     what I wanted to do and
-    #[a(href='https://github.com/rui314/mold/commit/eb6c213f2a9aa8a101b2b52a791be369d165e6a9') made it happen]
+    @[mold-commit made it happen]
     with what was essentially a single line of code change.
     Just #[em beyond awesome].
   p.
@@ -421,3 +421,8 @@ block article
     It's an awesome linker
     #[em and] it's free software.
     I'm OK with this!
+references
+  elf-program-header https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#Program_header
+  binutils-email https://sourceware.org/pipermail/binutils/2023-November/130640.html
+  llvm-issue https://github.com/llvm/llvm-project/issues/72386
+  mold-commit https://github.com/rui314/mold/commit/eb6c213f2a9aa8a101b2b52a791be369d165e6a9

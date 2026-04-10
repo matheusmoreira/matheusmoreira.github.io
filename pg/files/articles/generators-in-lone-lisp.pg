@@ -53,7 +53,7 @@ block article
 
   p.
     Now, there is absolutely no doubt that
-    #[a(href='/articles/delimited-continuations-in-lone-lisp') delimited continuations]
+    @(/articles/delimited-continuations-in-lone-lisp delimited continuations)
     are powerful abstractions. It's true.
     Generators #[em could] have been built on top of them.
     I think pretty much any sort of effects system
@@ -402,9 +402,11 @@ block article
     ... Ahem.
 
   p.
-    #[a(href='https://github.com/lone-lang/lone/commit/34d0e4a6d190573c9cf3fe15ac52217102a17bd9') And just like that],
+    @[generators-commit And just like that],
     lone has generators.
 
   p.
     The foundation for iteration is in place.
     Time to build on it.
+references
+  generators-commit https://github.com/lone-lang/lone/commit/34d0e4a6d190573c9cf3fe15ac52217102a17bd9

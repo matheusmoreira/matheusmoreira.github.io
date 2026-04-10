@@ -78,7 +78,7 @@ block article
     is already available in make
     via the #[code $HOME] environment variable
     and #[code ~] also works according to
-    #[a(href='https://www.gnu.org/software/make/manual/html_node/Wildcards.html#index-_007e-_0028tilde_0029') the documentation].
+    @[make-tilde the documentation].
     An equally easy way to refer to the dotfiles repository's
     #[code ~] directory would be nice.
 
@@ -107,7 +107,7 @@ block article
       endef
 
   p.
-    #[a(href='https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html') Automatic variables]
+    @[make-automatic-vars Automatic variables]
     are used in the recipe for maximum brevity.
     #[code $@] and #[code $<] refer to the link target and link name.
     #[code $(@D)] refers to the directory of the new link,
@@ -180,3 +180,6 @@ block article
     :prismjs(language=makefile)
       all += git
       git : ~/.gitconfig
+references
+  make-tilde https://www.gnu.org/software/make/manual/html_node/Wildcards.html#index-_007e-_0028tilde_0029
+  make-automatic-vars https://www.gnu.org/software/make/manual/html_node/Automatic-Variables.html

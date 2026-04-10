@@ -128,12 +128,12 @@ block article
 
   p.
     The very first result I found while searching was
-    #[a(href='https://journal.stuffwithstuff.com/2013/01/13/iteration-inside-and-out/') Bob Nystrom's article].
+    @[nystrom-iteration-1 Bob Nystrom's article].
     I wasn't even surprised. I mean #[em of course]
     he has written about iteration.
-    #[a(href='https://journal.stuffwithstuff.com/2013/02/24/iteration-inside-and-out-part-2/') Two articles, even.]
+    @[nystrom-iteration-2 Two articles, even.]
     First he taught me
-    #[a(href='https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/') how to collect garbage],
+    @[nystrom-gc how to collect garbage],
     now he's going to teach me how to iterate properly.
 
   p.
@@ -185,7 +185,7 @@ block article
     How do I do this #[em without] transforming the code?
     I decided to ask around in Programming Language Design
     and Implementation communities.
-    #[a(href='https://langdev.stackexchange.com/q/3547') I asked this question]
+    @(https://langdev.stackexchange.com/q/3547 I asked this question)
     on the Stack Exchange. I also asked about it on a Discord server.
     I was told about continuation passing style,
     yet another code transformation which I wanted to avoid...
@@ -207,7 +207,7 @@ block article
     So imagine my embarrassment when I realized it
     contained the exact answer to my question all along!
   p.
-    #[a(href='https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-34.html') Chapter 5.4],
+    @[sicp-5-4 Chapter 5.4],
     one of the very last chapters,
     describes the explicit-control evaluator,
     a register and stack machine which evaluates
@@ -470,7 +470,7 @@ block article
     I entertained the idea of just saving the entire
     C stack instead. I quickly gave up on this approach
     but not before I
-    #[a(href='https://langdev.stackexchange.com/q/4204') asked a question about it]
+    @(https://langdev.stackexchange.com/q/4204 asked a question about it)
     on Stack Exchange which produced a very interesting
     answer. So it #[em was] possible... Probably not
     wise but still. I always find it reassuring when
@@ -488,7 +488,7 @@ block article
 
   p.
     Inspiration came when I remembered
-    #[a(href='https://langdev.stackexchange.com/q/820') this Stack Exchange thread]
+    @(https://langdev.stackexchange.com/q/820 this Stack Exchange thread)
     I read while researching generators.
     Turns out generators are just perfectly
     normal functions that got mangled into
@@ -780,7 +780,7 @@ block article
     What even #[em are] these things? I knew of their existence because
     of my admittedly shallow knowledge of the Scheme programming language
     but I sure as hell didn't understand them.
-    #[a(href='https://en.wikipedia.org/wiki/Call-with-current-continuation') Wikipedia]
+    @[wiki-callcc Wikipedia]
     has the following example:
 
   +code
@@ -813,9 +813,9 @@ block article
   p.
     The community once again comes to my rescue.
     A kind soul on Discord pointed me towards
-    #[a(href='https://youtu.be/TE48LsgVlIU') a wonderful presentation]
+    @(https://youtu.be/TE48LsgVlIU a wonderful presentation)
     about delimited continuations. The keynote was given
-    by #[a(href='https://lexi-lambda.github.io/') Alexis King],
+    by @(https://lexi-lambda.github.io/ Alexis King),
     the same person who answered one of my Stack Exchange questions
     I mentioned earlier. It's an incredibly insightful presentation
     that's worth watching in its entirety. It really does demystify
@@ -829,7 +829,7 @@ block article
     #[code throw]? I think? I'm not even sure.
   p.
     Let's just forget about #[code call/cc].
-    #[a(href='https://okmij.org/ftp/continuations/against-callcc.html') Plenty of reasons]
+    @[against-callcc Plenty of reasons]
     not to insist on this thing anyway.
     Continuations should be #[em delimited].
     I have learned at least this much.
@@ -1186,3 +1186,10 @@ block article
   p.
     And just like that, lone has gained
     native first class delimited continuations!
+references
+  nystrom-iteration-1 https://journal.stuffwithstuff.com/2013/01/13/iteration-inside-and-out/
+  nystrom-iteration-2 https://journal.stuffwithstuff.com/2013/02/24/iteration-inside-and-out-part-2/
+  nystrom-gc https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/
+  sicp-5-4 https://mitp-content-server.mit.edu/books/content/sectbyfn/books_pres_0/6515/sicp.zip/full-text/book/book-Z-H-34.html
+  wiki-callcc https://en.wikipedia.org/wiki/Call-with-current-continuation
+  against-callcc https://okmij.org/ftp/continuations/against-callcc.html

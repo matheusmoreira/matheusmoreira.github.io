@@ -25,7 +25,7 @@ block article
   p.
     Thirteen years ago,
     in two thousand thirteen,
-    #[a(href='https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/') Baby’s First Garbage Collector]
+    @[babys-first-gc Baby’s First Garbage Collector]
     was born. Now he's grown up.
     He's outgrown his shallow
     kiddie pool and his paddles.
@@ -36,7 +36,7 @@ block article
   p.
     Bob Nystrom wasn't kidding about Baby's First Garbage Collector.
     It absolutely does collect garbage, and a version of it absolutely
-    did ship with my dynamic language, #[a(href='https://github.com/lone-lang/lone') lone lisp].
+    did ship with my dynamic language, @(https://github.com/lone-lang/lone lone lisp).
     In fact, if I remember correctly, lone actually #[em still ships]
     with it, believe it or not. He wasn't kidding about communion
     with the Elder Gods either. I can feel my magic level increasing.
@@ -327,7 +327,7 @@ block article
     naively attempt to check every lisp pointer
     against every other pointer in the native stack,
     leading to quadratic behavior which in turn yields
-    #[a(href='https://nee.lv/2021/02/28/How-I-cut-GTA-Online-loading-times-by-70/') nothing but disgrace and humiliation].
+    @[gta-loading nothing but disgrace and humiliation].
 
   p.
     Not the garbage collector. It was better than that.
@@ -407,21 +407,21 @@ block article
     written by those who came before us. People like
     Hans Boehm, Alan Demers and Mark Weiser,
     who once upon a time #[em also] sat down and decided to write
-    #[a(href='https://en.wikipedia.org/wiki/Boehm_garbage_collector') a garbage collector].
+    @[bdwgc-wiki a garbage collector].
     For C and C++. Yes, you read that right.
 
   p.
     I had to know. I had to know how they did it.
-    #[a(href='https://github.com/bdwgc/bdwgc') The source code]
+    @(https://github.com/bdwgc/bdwgc The source code)
     proved somewhat impenetrable, too dense to just dive in...
     However, after some exploration, I struck gold.
 
   p.
-    #[a(href='https://github.com/bdwgc/bdwgc/blob/946696b9b16580fcece3bc4d640f35afc139426d/docs/porting.md#L178-L194') The porting guide]
+    @[bdwgc-porting The porting guide]
     mentioned a function named #[code GC_with_callee_saves_pushed]
     whose purpose is to spill the registers on the stack so that
     the garbage collector may trace it.
-    #[a(href='https://github.com/bdwgc/bdwgc/blob/946696b9b16580fcece3bc4d640f35afc139426d/mach_dep.c#L140-L150') And how was it implemented?]
+    @[bdwgc-callee-saves And how was it implemented?]
 
   +code
     :prismjs(language=c)
@@ -479,10 +479,10 @@ block article
 
   p.
     After exploring
-    #[a(href='https://git.musl-libc.org/cgit/musl/tree/arch/x86_64/bits/setjmp.h') some]
-    #[a(href='https://git.musl-libc.org/cgit/musl/tree/src/setjmp/x86_64/setjmp.s') more]
-    #[a(href='https://git.musl-libc.org/cgit/musl/tree/arch/aarch64/bits/setjmp.h') source]
-    #[a(href='https://git.musl-libc.org/cgit/musl/tree/src/setjmp/aarch64/setjmp.s') code],
+    @[musl-x86_64-setjmp-h some]
+    @[musl-x86_64-setjmp-s more]
+    @[musl-aarch64-setjmp-h source]
+    @[musl-aarch64-setjmp-s code],
     I received enlightenment. I understood.
     I knew exactly what it was that I had to do.
 
@@ -593,3 +593,13 @@ block article
 
   p.
     Next time, we'll teach him how.
+references
+  babys-first-gc https://journal.stuffwithstuff.com/2013/12/08/babys-first-garbage-collector/
+  gta-loading https://nee.lv/2021/02/28/How-I-cut-GTA-Online-loading-times-by-70/
+  bdwgc-wiki https://en.wikipedia.org/wiki/Boehm_garbage_collector
+  bdwgc-porting https://github.com/bdwgc/bdwgc/blob/946696b9b16580fcece3bc4d640f35afc139426d/docs/porting.md#L178-L194
+  bdwgc-callee-saves https://github.com/bdwgc/bdwgc/blob/946696b9b16580fcece3bc4d640f35afc139426d/mach_dep.c#L140-L150
+  musl-x86_64-setjmp-h https://git.musl-libc.org/cgit/musl/tree/arch/x86_64/bits/setjmp.h
+  musl-x86_64-setjmp-s https://git.musl-libc.org/cgit/musl/tree/src/setjmp/x86_64/setjmp.s
+  musl-aarch64-setjmp-h https://git.musl-libc.org/cgit/musl/tree/arch/aarch64/bits/setjmp.h
+  musl-aarch64-setjmp-s https://git.musl-libc.org/cgit/musl/tree/src/setjmp/aarch64/setjmp.s

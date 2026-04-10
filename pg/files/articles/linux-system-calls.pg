@@ -62,7 +62,7 @@ block article
       for Darwin. This is explicitly against what Apple recommends,
       precisely because they're not willing to commit to a particular
       syscall ABI. This leads to issues like
-      #[a(href='https://github.com/golang/go/issues/16570') #16570],
+      @(https://github.com/golang/go/issues/16570 #16570),
       and although we've been lucky in that things have generally been
       backward-compatible so far, there's no guarantee that it'll
       continue to happen. It doesn't seem inconceivable to me
@@ -78,7 +78,7 @@ block article
   p.
     Sometimes it's not even possible to use system calls at all.
     OpenBSD has implemented
-    #[a(href='https://lwn.net/Articles/806776/') system call origin verification],
+    @(https://lwn.net/Articles/806776/ system call origin verification),
     a security mechanism that only allows system calls originating
     from the system's #[code libc]. So not only is the kernel ABI unstable,
     normal programs are not even allowed to interface with the kernel at all.
@@ -97,9 +97,9 @@ block article
     blockquote(cite='https://lwn.net/Articles/806776/').
       It is an ABI break for the operating system,
       but that is no big deal for OpenBSD.
-      De Raadt #[a(href='https://lwn.net/Articles/806869/') said]:
+      De Raadt @(https://lwn.net/Articles/806869/ said):
       #[q(cite='https://lwn.net/Articles/806869/') we here at OpenBSD are the kings of ABI-instability].
-      He #[a(href='https://lwn.net/Articles/806870/') suggested] that
+      He @(https://lwn.net/Articles/806870/ suggested) that
       relying on the OpenBSD ABI is fraught with peril:
       #[blockquote(cite='https://lwn.net/Articles/806870/') Program to the API rather than the ABI. When we see benefits, we change the ABI more often than the API. I have altered the ABI. Pray I do not alter it further.]
     figcaption
