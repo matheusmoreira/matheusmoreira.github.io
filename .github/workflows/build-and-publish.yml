@@ -34,7 +34,7 @@ jobs:
       - name: Build with pugneum
         run: npx pugneum
       - name: Format files
-        run: npx prettier --write 'matheusmoreira.com/**/*'
+        run: npx prettier --write --ignore-unknown 'matheusmoreira.com/**/*'
       - name: Copy CSS
         run: cp -rf css/ matheusmoreira.com/
       - name: Upload artifact
