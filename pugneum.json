@@ -1,5 +1,8 @@
 {
     "inputDirectory": "pg/files",
     "outputDirectory": "matheusmoreira.com",
-    "baseDirectory": "pg"
+    "baseDirectory": "pg",
+    "feeds": {
+        "enabled": true
+    }
 }
