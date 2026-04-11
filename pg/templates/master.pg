@@ -1,5 +1,6 @@
 html(lang=en)
   head
+    base(href='https://www.matheusmoreira.com/')
     meta(charset=utf-8)
     meta(name=referrer content=no-referrer)
     link(rel=stylesheet href=/css/matheusmoreira.css)
