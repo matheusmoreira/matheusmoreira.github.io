@@ -80,7 +80,7 @@ ol#index {
   }
 
   li::marker {
-    content: attr(published-at);
+    content: attr(data-published-at);
     font-family: var(--monospace-font);
   }
 }

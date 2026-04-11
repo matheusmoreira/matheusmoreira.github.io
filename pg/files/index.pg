@@ -12,15 +12,15 @@ block body
     Now what shall I write about? I have some ideas...
   nav
     ol#index
-      li(published-at="2026-04-01")
+      li(data-published-at="2026-04-01")
         a(href='/articles/babys-second-garbage-collector') Baby’s Second Garbage Collector
-      li(published-at="2026-03-21")
+      li(data-published-at="2026-03-21")
         a(href='/articles/generators-in-lone-lisp') Generators in lone lisp
-      li(published-at="2025-10-03")
+      li(data-published-at="2025-10-03")
         a(href='/articles/delimited-continuations-in-lone-lisp') Delimited continuations in lone lisp
-      li(published-at="2023-11-28")
+      li(data-published-at="2023-11-28")
         a(href='/articles/self-contained-lone-lisp-applications') Self-contained Linux applications with lone lisp
-      li(published-at="2023-09-03")
+      li(data-published-at="2023-09-03")
         a(href='/articles/managing-dotfiles-with-make') Managing dotfiles with Make
-      li(published-at="2023-02-07")
+      li(data-published-at="2023-02-07")
         a(href='/articles/linux-system-calls') Linux system calls
