@@ -1,5 +1,10 @@
 extends /templates/master.pg
 
+include /mixins/code.pg
+
+append head
+  meta(name=author content='Matheus Afonso Martins Moreira')
+
 block body
   article
     block article

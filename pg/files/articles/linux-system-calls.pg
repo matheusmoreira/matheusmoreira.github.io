@@ -1,10 +1,7 @@
 extends /templates/article.pg
 
-include /mixins/code.pg
-
 append head
   title Linux system calls
-  meta(name=author content='Matheus Afonso Martins Moreira')
   meta(name=description content='Everything I know about Linux system calls.')
   meta(name=keywords content='linux, system call, syscall')
 

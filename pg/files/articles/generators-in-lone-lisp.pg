@@ -1,10 +1,7 @@
 extends /templates/article.pg
 
-include /mixins/code.pg
-
 append head
   title Generators in lone lisp
-  meta(name=author content='Matheus Afonso Martins Moreira')
   meta(name=description content='The lone lisp generators implementation journey.')
   meta(name=keywords content='freestanding, linux, lisp, lone, generators')
 

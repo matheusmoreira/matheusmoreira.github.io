@@ -1,10 +1,7 @@
 extends /templates/article.pg
 
-include /mixins/code.pg
-
 append head
   title Self-contained Linux applications with lone lisp
-  meta(name=author content='Matheus Afonso Martins Moreira')
   meta(name=description content='Creating standalone Linux applications with lone.')
   meta(name=keywords content='freestanding, standalone, self-contained, linux, application, system call, syscall, lone, lisp')
 

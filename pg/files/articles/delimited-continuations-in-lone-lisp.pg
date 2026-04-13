@@ -1,10 +1,7 @@
 extends /templates/article.pg
 
-include /mixins/code.pg
-
 append head
   title Delimited continuations in lone lisp
-  meta(name=author content='Matheus Afonso Martins Moreira')
   meta(name=description content='The lone lisp delimited continuations implementation journey.')
   meta(name=keywords content='freestanding, linux, lisp, lone, continuations, delimited-continuations')
 

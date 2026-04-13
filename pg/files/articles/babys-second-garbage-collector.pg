@@ -1,10 +1,7 @@
 extends /templates/article.pg
 
-include /mixins/code.pg
-
 append head
   title Baby’s Second Garbage Collector
-  meta(name=author content='Matheus Afonso Martins Moreira')
   meta(name=description content='Implementation of the conservative garbage collector in lone lisp.')
   meta(name=keywords content='conservative, garbage, collector, mark, sweep')
 
