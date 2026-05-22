@@ -6,10 +6,7 @@ append head
   meta(name='description' content='Stuff I think about and don\'t want to forget.')
 
 block body
-  h1 A first step
-  p.
-    They say getting started is the hardest part, so I'm glad that's over.
-    Now what shall I write about? I have some ideas...
+  h1 Articles
   nav
     ol#index
       li(data-published-at="2026-04-01")
