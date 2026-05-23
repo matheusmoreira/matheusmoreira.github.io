@@ -232,10 +232,9 @@ block article
 
   p.
     The function ensures all arguments are placed in the appropriate
-    registers by assigning them to local variables annotated with an
-    inline assembly directive which tells the compiler which register
-    to choose. The #[code register] keyword does nothing, it's there
-    just to make it clear what these variables are about.
+    registers by assigning them to local variables annotated with the
+    #[code register] keyword as well as an inline assembly directive
+    which tells the compiler which register to choose.
 
   p.
     The #[code x86_64] architecture contains the aptly named #[code syscall]
