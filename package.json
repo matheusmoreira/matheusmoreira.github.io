@@ -1,8 +1,8 @@
 {
   "dependencies": {
     "prettier": "^3.0.3",
-    "pugneum": "1.1.0",
-    "pugneum-feed": "1.0.1",
-    "pugneum-filter-prismjs": "1.0.0"
+    "pugneum": "1.1.1",
+    "pugneum-feed": "1.0.2",
+    "pugneum-filter-prismjs": "1.0.1"
   }
 }
