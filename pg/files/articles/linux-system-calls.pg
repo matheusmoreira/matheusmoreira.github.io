@@ -172,20 +172,15 @@ block article
     implementation of Linux system calls. They are definitely worth reading.
 
   ol
-    li
-      a(href='https://lwn.net/Articles/604287/') Anatomy of a system call, part 1
-    li
-      a(href='https://lwn.net/Articles/604515/') Anatomy of a system call, part 2
-    li
-      a(href='https://lwn.net/Articles/604406/') Anatomy of a system call, additional content
+    li @[lwn-1 Anatomy of a system call, part 1]
+    li @[lwn-2 Anatomy of a system call, part 2]
+    li @[lwn-3 Anatomy of a system call, additional content]
 
   p The calling convention is documented here:
 
   ul
-    li
-      a(href='https://man7.org/linux/man-pages/man2/syscall.2.html') #[code syscall.2]
-    li
-      a(href='https://man7.org/linux/man-pages/man2/syscalls.2.html') #[code syscalls.2]
+    li @[syscall #[code syscall.2]]
+    li @[syscalls #[code syscalls.2]]
 
   h2 Implementing a system call function
 
@@ -269,3 +264,10 @@ block article
     The various #[code libc]s normalize those error values and place them
     in a global or thread local #[code errno] variable.
     That's not necessary when using Linux system calls directly!
+
+references
+  lwn-1 https://lwn.net/Articles/604287/
+  lwn-2 https://lwn.net/Articles/604515/
+  lwn-3 https://lwn.net/Articles/604406/
+  syscall https://man7.org/linux/man-pages/man2/syscall.2.html
+  syscalls https://man7.org/linux/man-pages/man2/syscalls.2.html
