@@ -7,6 +7,7 @@ body {
   --background-color: var(--color-night);
   --border-color: var(--color-green);
   --text-color: var(--color-white);
+  --heading-color: var(--color-amber);
   --link-color: var(--color-green);
 
   --sans-serif-font: "Noto Sans", sans-serif;
@@ -74,6 +75,7 @@ main {
 
 h1, h2, h3, h4, h5, h6 {
   line-height: 1.2;
+  color: var(--heading-color);
 }
 
 ol#index {
