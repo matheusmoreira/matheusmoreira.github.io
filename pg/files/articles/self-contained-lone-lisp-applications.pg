@@ -321,7 +321,7 @@ block article
   h2 Special linker features
   p.
     Remember the `(lone-embed) tool which I briefly mentioned
-    at the beginning of the articled? It's an ELF patching tool
+    at the beginning of the article? It's an ELF patching tool
     which I built specifically for this purpose and it's doing
     _(a lot of) heavy lifting here.
   p.
