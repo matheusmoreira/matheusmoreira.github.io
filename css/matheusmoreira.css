@@ -1,10 +1,16 @@
 body {
+  --color-white: hsl(0 0% 90%);
+  --color-amber: hsl(30deg 80% 60%);
+  --color-green: hsl(156deg 80% 45%);
+  --color-night: hsl(200deg 100% 5%);
+
+  --background-color: var(--color-night);
+  --border-color: var(--color-green);
+  --text-color: var(--color-white);
+  --link-color: var(--color-green);
+
   --sans-serif-font: "Noto Sans", sans-serif;
   --monospace-font: "Fira Code", "Noto Sans Mono", monospace;
-  --text-color: hsl(0 0% 90%);
-  --background-color: hsl(192deg 100% 5%);
-  --border-color: hsl(156deg 40% 45%);
-  --link-color: hsl(156deg 80% 55%);
 }
 
 body {
