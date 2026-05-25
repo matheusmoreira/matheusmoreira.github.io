@@ -7,6 +7,7 @@ body {
   --background-color: var(--color-night);
   --border-color: var(--color-green);
   --text-color: var(--color-white);
+  --nav-color: var(--color-white);
   --heading-color: var(--color-amber);
   --link-color: var(--color-green);
 
@@ -39,7 +40,7 @@ header a {
   text-decoration: none;
   display: block;
   padding: 1ch;
-  color: var(--text-color);
+  color: var(--nav-color);
   font-size: 1.2em;
   font-weight: bold;
 }
