@@ -1,12 +1,9 @@
-extends /templates/article.pg
+extends /templates/code-article.pg
 
 append head
   title Linux system calls
   meta(name=description content='Everything I know about Linux system calls.')
   meta(name=keywords content='linux, system call, syscall')
-
-  link(rel=stylesheet href=/css/monokai.prism.css)
-
 block article
   h1 Linux system calls
   p.
@@ -20,10 +17,10 @@ block article
   h2 Why Linux system calls?
   p.
     Programs usually interface with the kernel through libraries
-    provided by the operating system, most commonly #[code libc].
+    provided by the operating system, most commonly `(libc).
     Through these libraries, they have access to system functions.
-    #[abbr POSIX]-compliant operating systems provide
-    #[code read], #[code write] and numerous others.
+    ?(POSIX)-compliant operating systems provide
+    `(read), `(write) and numerous others.
     Windows has the Win32 API and its many DLLs and functions.
 
   p.
@@ -39,7 +36,7 @@ block article
     While it is often possible to interface with the kernel
     directly, the kernel interface is unstable and subject to
     change. Software that insists on using that interface
-    might simply stop working if — or rather #[em when] — it changes.
+    might simply stop working if — or rather _(when) — it changes.
 
   figure
     blockquote(cite='https://news.ycombinator.com/item?id=28413001').
@@ -51,7 +48,7 @@ block article
     figcaption
       cite
         a(href='https://news.ycombinator.com/item?id=28413001').
-          marcan_42, Hacker News, #[time(datetime=2021-09-04) Sept 4, 2021]
+          marcan_42, Hacker News, #(time(datetime=2021-09-04) Sept 4, 2021)
 
   figure
     blockquote(cite='https://github.com/golang/go/issues/17490').
@@ -70,14 +67,14 @@ block article
       cite
         a(href='https://github.com/golang/go/issues/17490').
           copumpkin, golang/go GitHub issue #17490,
-          #[time(datetime=2016-10-17) Oct 17, 2016]
+          #(time(datetime=2016-10-17) Oct 17, 2016)
 
   p.
     Sometimes it's not even possible to use system calls at all.
     OpenBSD has implemented
     @(https://lwn.net/Articles/806776/ system call origin verification),
     a security mechanism that only allows system calls originating
-    from the system's #[code libc]. So not only is the kernel ABI unstable,
+    from the system's `(libc). So not only is the kernel ABI unstable,
     normal programs are not even allowed to interface with the kernel at all.
 
   figure
@@ -95,15 +92,15 @@ block article
       It is an ABI break for the operating system,
       but that is no big deal for OpenBSD.
       De Raadt @(https://lwn.net/Articles/806869/ said):
-      #[q(cite='https://lwn.net/Articles/806869/') we here at OpenBSD are the kings of ABI-instability].
+      #(q(cite='https://lwn.net/Articles/806869/') we here at OpenBSD are the kings of ABI-instability).
       He @(https://lwn.net/Articles/806870/ suggested) that
       relying on the OpenBSD ABI is fraught with peril:
-      #[blockquote(cite='https://lwn.net/Articles/806870/') Program to the API rather than the ABI. When we see benefits, we change the ABI more often than the API. I have altered the ABI. Pray I do not alter it further.]
+      #(blockquote(cite='https://lwn.net/Articles/806870/') Program to the API rather than the ABI. When we see benefits, we change the ABI more often than the API. I have altered the ABI. Pray I do not alter it further.)
     figcaption
       cite
         a(href='https://lwn.net/Articles/806776/').
           Jake Edge, OpenBSD system-call-origin verification, LWN,
-          #[time(datetime=2019-12-11) December 11, 2019]
+          #(time(datetime=2019-12-11) December 11, 2019)
 
   h3 Linux is different
   p.
@@ -122,21 +119,21 @@ block article
       cite
         a(href='https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/ABI/stable/syscalls').
           torvalds/linux, Documentation/ABI/stable/syscalls,
-          #[time(datetime=2006-06-21) 2006-06-21]
+          #(time(datetime=2006-06-21) 2006-06-21)
 
   p.
-    This is rooted in the fact Linux is a #[em kernel],
+    This is rooted in the fact Linux is a _(kernel),
     not a complete operating system as traditionally defined.
-    As an independent component, it #[em must] have a stable
+    As an independent component, it _(must) have a stable
     interface to user space software
     if anything is to be built upon it.
 
   p.
     While many people argue that Linux is not an operating system,
-    there's no question that Linux is a #[em platform] and that
+    there's no question that Linux is a _(platform) and that
     it is possible to safely build directly upon it.
-    There is no actual #[em need] to depend on anything else.
-    Not even #[code libc].
+    There is no actual _(need) to depend on anything else.
+    Not even `(libc).
 
   h2 How Linux system calls work
   p.
@@ -146,7 +143,7 @@ block article
     code at a predefined location in the kernel.
   p.
     At least one parameter must be provided: the system call number,
-    often referred to as the #[code NR]. Linux uses this number as an
+    often referred to as the `(NR). Linux uses this number as an
     index into a table of function pointers to find the function being
     called. Any other arguments are passed to this function.
   p.
@@ -154,17 +151,17 @@ block article
     The kernel also returns a result value in a register.
     Which registers are used for which parameters
     and which register contains the return value
-    defines the #[strong Linux system call calling convention].
+    defines the *(Linux system call calling convention).
   p.
     This calling convention is stable, allowing user space programs to
     use it without fear of breakage. It is defined at the instruction set
     level and so it is also programming language agnostic.
     All user space programs written in any language may make use of it.
-    Typically, programs call #[code libc] functions which implement this
+    Typically, programs call `(libc) functions which implement this
     calling convention. However, that is not actually a requirement.
     It's perfectly possible for a compiler to directly emit code
     following that calling convention: it could have support for a
-    #[code system_call] keyword. A JIT compiler could generate code for this
+    `(system_call) keyword. A JIT compiler could generate code for this
     at runtime.
 
   p.
@@ -179,8 +176,8 @@ block article
   p The calling convention is documented here:
 
   ul
-    li @[syscall #[code syscall.2]]
-    li @[syscalls #[code syscalls.2]]
+    li @[syscall `(syscall.2)]
+    li @[syscalls `(syscalls.2)]
 
   h2 Implementing a system call function
 
@@ -195,7 +192,7 @@ block article
     it is simple to write a C function that can make any system call.
 
   p.
-    For example, a system call function for the #[code x86_64] architecture:
+    For example, a system call function for the `(x86_64) architecture:
 
   +code
     :prismjs(language=c)
@@ -224,23 +221,23 @@ block article
       }
 
   p.
-    All parameters and the return value are of type #[code long].
+    All parameters and the return value are of type `(long).
     This really just means "register": all values passed to the kernel
-    must fit in registers and typically #[code long] is register sized.
+    must fit in registers and typically `(long) is register sized.
     This means all arguments must either be simple values or pointers
     to more complex structures.
 
   p.
     The function ensures all arguments are placed in the appropriate
     registers by assigning them to local variables annotated with the
-    #[code register] keyword as well as an inline assembly directive
+    `(register) keyword as well as an inline assembly directive
     which tells the compiler which register to choose.
 
   p.
-    The #[code x86_64] architecture contains the aptly named #[code syscall]
+    The `(x86_64) architecture contains the aptly named `(syscall)
     instruction which switches to kernel mode and enters the kernel entry point.
     Other architectures have different instructions. For example,
-    #[code aarch64] uses #[code svc #0] instead.
+    `(aarch64) uses `(svc #0) instead.
 
   p.
     The compiler is informed via the extended inline assembly construct
@@ -248,7 +245,7 @@ block article
     some registers, the carry bit and memory.
     The 7 inputs are all the previously assigned system call number
     and parameter registers.
-    The output is the return value which is placed in #[code rax],
+    The output is the return value which is placed in `(rax),
     overwriting the system call number.
   aside
     p.
@@ -259,9 +256,9 @@ block article
 
   p.
     After the system call has been made, all that's left to do is to return the result.
-    It may be a valid value or a negated #[code errno] constant.
-    The various #[code libc]s normalize those error values and place them
-    in a global or thread local #[code errno] variable.
+    It may be a valid value or a negated `(errno) constant.
+    The various `(libc)s normalize those error values and place them
+    in a global or thread local `(errno) variable.
     That's not necessary when using Linux system calls directly!
 
 references

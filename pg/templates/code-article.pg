@@ -1,0 +1,6 @@
+extends /templates/article.pg
+
+include @pugneum-mixins/code.pg
+
+append head
+  link(rel=stylesheet href=/css/monokai.prism.css)

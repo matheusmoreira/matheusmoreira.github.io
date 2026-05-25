@@ -85,6 +85,10 @@ ol#index {
   }
 }
 
+figure {
+  margin: 0;
+}
+
 pre {
   overflow-x: auto;
   margin-left: 2ch;

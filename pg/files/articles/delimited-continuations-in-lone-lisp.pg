@@ -1,12 +1,9 @@
-extends /templates/article.pg
+extends /templates/code-article.pg
 
 append head
   title Delimited continuations in lone lisp
   meta(name=description content='The lone lisp delimited continuations implementation journey.')
   meta(name=keywords content='freestanding, linux, lisp, lone, continuations, delimited-continuations')
-
-  link(rel=stylesheet href=/css/monokai.prism.css)
-
 block article
   h1 Delimited continuations in lone lisp
 
@@ -44,19 +41,19 @@ block article
   p.
     Lone was growing in complexity.
     I already had all these data types,
-    all of these #[em collections].
+    all of these _(collections).
     I was having quite a lot of fun
     implementing these things.
     I was learning so much.
     Hash tables? Powerful stuff.
   p.
     However, there was something
-    I was secretly avoiding: #[strong iteration].
+    I was secretly avoiding: *(iteration).
 
   p.
     Well, that's not entirely true.
-    I didn't #[em completely] avoid the issue.
-    Inspired by Ruby, I added some #[code each]
+    I didn't _(completely) avoid the issue.
+    Inspired by Ruby, I added some `(each)
     primitives to the intrinsic modules.
 
   +code
@@ -68,7 +65,7 @@ block article
           (print value)))
 
   p.
-    The way the #[code each] function works internally
+    The way the `(each) function works internally
     is it iterates over the contents of the vector
     and calls the provided function with each element
     as its sole argument.
@@ -91,16 +88,16 @@ block article
       }
 
   p.
-    I cheated a little: I left the #[em actual] iteration
-    up to the C compiler. That #[code FOR_EACH] macro
-    simply evaluates to a good old #[code for] loop.
+    I cheated a little: I left the _(actual) iteration
+    up to the C compiler. That `(FOR_EACH) macro
+    simply evaluates to a good old `(for) loop.
     The C code iterates on behalf of lone,
     applying the current element
     to the provided function.
 
   p.
     So what is the issue? I mean, this works.
-    #[em This actually works] just fine!
+    _(This actually works) just fine!
 
   p.
     The problem is this made one of lone's limitations
@@ -111,7 +108,7 @@ block article
 
   p.
     I couldn't even begin to imagine how to implement something
-    simple like a #[code while] primitive, to say nothing of
+    simple like a `(while) primitive, to say nothing of
     magical stuff like generators. Clearly this was going to
     take a lot more effort than it initially seemed.
 
@@ -126,7 +123,7 @@ block article
   p.
     The very first result I found while searching was
     @[nystrom-iteration-1 Bob Nystrom's article].
-    I wasn't even surprised. I mean #[em of course]
+    I wasn't even surprised. I mean _(of course)
     he has written about iteration.
     @[nystrom-iteration-2 Two articles, even.]
     First he taught me
@@ -137,7 +134,7 @@ block article
     These beautifully written articles demonstrate
     exactly why Ruby is nice. Ruby lets programmers
     write nice code that passes values to blocks,
-    just like my #[code each] function. Whenever
+    just like my `(each) function. Whenever
     that fails to compose, concurrency comes to
     the rescue: Ruby somehow suspends the code
     in the middle of the iteration and yields
@@ -145,16 +142,16 @@ block article
     resume whenever they want. This way,
     multiple iterative processes can be
     composed, interleaved or even
-    interrupted. #[em Good.]
+    interrupted. _(Good.)
 
   p.
     My sense of wonder quickly gave way to horror
     once I realized what was necessary to have such
     goodness. It turned out lone needed the one thing
     it did not have at the time:
-    #[em control over the call stack].
+    _(control over the call stack).
     Lone was a
-    #[em recursive tree-walking interpreter].
+    _(recursive tree-walking interpreter).
     The call stack, too, was managed by the C compiler.
 
   p.
@@ -179,20 +176,20 @@ block article
     I didn't think so.
 
   p.
-    How do I do this #[em without] transforming the code?
+    How do I do this _(without) transforming the code?
     I decided to ask around in Programming Language Design
     and Implementation communities.
     @(https://langdev.stackexchange.com/q/3547 I asked this question)
     on the Stack Exchange. I also asked about it on a Discord server.
     I was told about continuation passing style,
     yet another code transformation which I wanted to avoid...
-    I #[em really] like those lists!
+    I _(really) like those lists!
 
   p.
     One particular reference kept popping up though:
     Structure and Interpretation of Computer Programs.
-    #[abbr(title='Structure and Interpretation of Computer Programs') SICP], for short.
-    #[strong THE] book of the Scheme programming language.
+    ?(SICP Structure and Interpretation of Computer Programs), for short.
+    *(THE) book of the Scheme programming language.
     One of the most classic books in the field.
     Science? Nah, we're more like wizards casting spells,
     computers are merely the runes upon which we inscribe
@@ -208,7 +205,7 @@ block article
     one of the very last chapters,
     describes the explicit-control evaluator,
     a register and stack machine which evaluates
-    lisp expressions #[em without] converting
+    lisp expressions _(without) converting
     them into something else first.
 
   h3 The explicit-control evaluator
@@ -222,18 +219,18 @@ block article
     modifying it as I went along.
   p.
     Lone's evaluator did not have many
-    special cases. Things like #[code if]
+    special cases. Things like `(if)
     are traditionally implemented as special
     cases in the evaluator, but since lone
     has FEXPRs I was able to factor them out
-    into the intrinsic #[code lone] module.
-    In lone, programmers import #[code if]
+    into the intrinsic `(lone) module.
+    In lone, programmers import `(if)
     as though it was some random function
     instead of a core part of the language.
   p.
     The result was a machine that implements
     what I have come to believe to be the
-    #[em true] essence of lisp:
+    _(true) essence of lisp:
     self-evaluating values,
     and function application.
     A lisp machine, if you will.
@@ -269,10 +266,10 @@ block article
 
   p.
     Only when the machine runs into a list
-    does it #[em really] start processing.
+    does it _(really) start processing.
   p.
-    Lists represent #[em function application]
-    in the form #[code (f x y z ...)].
+    Lists represent _(function application)
+    in the form `((f x y z ...)).
     The first thing that needs to happen
     is evaluation of the function itself.
     It's probably a variable pointing to
@@ -281,7 +278,7 @@ block article
     Whatever it is, it must be evaluated.
     So the machine loops back into the
     expression evaluation logic, this time
-    with #[code f] as the expression.
+    with `(f) as the expression.
 
   +code
     :prismjs(language=c)
@@ -348,7 +345,7 @@ block article
       They're just numbers representing
       what the machine's NeXTSTEP is.
       The machine is simply switching on
-      the #[code step] variable every cycle.
+      the `(step) variable every cycle.
     p.
       By directly setting this variable
       and associated registers, the machine
@@ -361,7 +358,7 @@ block article
       This is accomplished by popping a step
       off the stack directly into the step
       register. Through this method, the machine
-      can be rigged to do something #[em after]
+      can be rigged to do something _(after)
       it finishes doing whatever it was directly
       configured to do via the above method.
 
@@ -426,7 +423,7 @@ block article
     C functions was developing:
     the primitives are going to
     want to call back into lisp.
-    For example, #[code if] needs
+    For example, `(if) needs
     the machine to evaluate the
     condition and one of two
     expressions.
@@ -445,14 +442,14 @@ block article
     figcaption
       cite
         a(href='https://www.wingolog.org/archives/2010/02/26/guile-and-delimited-continuations').
-           Andy Wingo, wingolog, #[time(datetime='2010-02-26 20:39') 26 February 2010 8:39 PM]
+           Andy Wingo, wingolog, #(time(datetime='2010-02-26 20:39') 26 February 2010 8:39 PM)
 
   p.
     How can I possibly capture and manipulate
     the lisp stack when it's in fact interleaving
     with the C stack? I can't.
   p.
-    So after going through #[em all this trouble]
+    So after going through _(all this trouble)
     to convert the recursive evaluator into a machine
     just to expose the lisp stack so that I could
     manipulate it, I end up in this sorry situation
@@ -461,7 +458,7 @@ block article
     Clearly, the primitives cannot be allowed
     to recurse back into the machine...
     But how could this work? Many of them
-    #[em need] to do this just to work at all!
+    _(need) to do this just to work at all!
 
   p.
     I entertained the idea of just saving the entire
@@ -469,16 +466,16 @@ block article
     but not before I
     @(https://langdev.stackexchange.com/q/4204 asked a question about it)
     on Stack Exchange which produced a very interesting
-    answer. So it #[em was] possible... Probably not
+    answer. So it _(was) possible... Probably not
     wise but still. I always find it reassuring when
     I discover I'm not the first person who tried to
     do something that normal people clearly consider
-    to be #[em completely insane].
+    to be _(completely insane).
 
   h3 Integrating the primitives into the machine
   p.
     Enough. No more of this C stack business.
-    The primitives #[em cannot be allowed]
+    The primitives _(cannot be allowed)
     to recurse back into lisp. That's the
     end of it. There's gotta be a way to
     solve this even with this constraint.
@@ -524,7 +521,7 @@ block article
         a(href='https://langdev.stackexchange.com/a/834').
            mousetail,
            Programming Language Design and Implementation Stack Exchange,
-           #[time(datetime='2023-05-20 14:06') May 20, 2023 at 14:06]
+           #(time(datetime='2023-05-20 14:06') May 20, 2023 at 14:06)
 
   p.
     It's got an initial state and it transitions
@@ -536,10 +533,10 @@ block article
     Could these two concepts work together?
 
   p.
-    The answer turned out to be a resounding #[strong yes]!
+    The answer turned out to be a resounding *(yes)!
     I rewrote all of lone's primitives to be state machines
     instead, just like the example in the answer to the
-    question. The aforementioned #[code each] primitive,
+    question. The aforementioned `(each) primitive,
     for example, which once upon a time was relatively
     simple function, turned into this monstrosity:
 
@@ -626,7 +623,7 @@ block article
     evaluator functions, the C compiler guaranteed
     those functions would always return their results
     to them. That's no longer the case.
-    #[em The lisp machine is in control now.]
+    _(The lisp machine is in control now.)
 
   +code
     :prismjs(language=c)
@@ -672,14 +669,14 @@ block article
     all this trouble again? Ah yes.
     I remember now. The stack.
     There it is. Reified.
-    Just #[em sitting] there.
+    Just _(sitting) there.
     Right in the middle of the structure.
     Literally one pointer away.
     Just waiting to be smashed
     and overflown all night long.
   p.
     So what am I going to do with this thing?
-    What #[em can] I do with it?
+    What _(can) I do with it?
 
   p.
     Can I return early from functions?
@@ -699,7 +696,7 @@ block article
     To return, I need to find where
     on the stack the function starts.
     I need to put some kind of marker
-    on the stack. #[em A delimiter.]
+    on the stack. _(A delimiter.)
     It shall be pushed onto the stack
     before the function is called
     and popped off the stack when
@@ -729,7 +726,7 @@ block article
           /* ... */
 
   p.
-    Now #[code return] can just unwind
+    Now `(return) can just unwind
     the stack until it finds this marker.
     To unwind the stack, simply pop off
     frames until you reach the frame you
@@ -760,12 +757,12 @@ block article
       }
 
   p.
-    So #[em this] is the power of the call stack...
+    So _(this) is the power of the call stack...
 
   h2 Delimited continuations
   p.
-    So completely drunk on the #[em power] of the dark side was I,
-    that I decided to go from the humble #[code return] primitive
+    So completely drunk on the _(power) of the dark side was I,
+    that I decided to go from the humble `(return) primitive
     to one of the most powerful control mechanisms there is:
     delimited continuations. They say it is the one control
     to rule them all, one control to implement them,
@@ -774,7 +771,7 @@ block article
 
   p.
     But first I had to wrap my head around plain simple continuations.
-    What even #[em are] these things? I knew of their existence because
+    What even _(are) these things? I knew of their existence because
     of my admittedly shallow knowledge of the Scheme programming language
     but I sure as hell didn't understand them.
     @[wiki-callcc Wikipedia]
@@ -793,20 +790,20 @@ block article
     It's not immediately apparent what's going on here.
     Let's unpack it step by step.
   p.
-    #[code f] takes a function, an applicable value really.
+    `(f) takes a function, an applicable value really.
     Nothing special happens when a normal function is passed:
     it gets called, returns, and the program continues on.
   p.
-    Passing #[code f] to #[code call-with-current-continuation],
-    which by the way is commonly abbreviated as #[code call/cc],
-    causes it to be called with the #[em current continuation],
+    Passing `(f) to `(call-with-current-continuation),
+    which by the way is commonly abbreviated as `(call/cc),
+    causes it to be called with the _(current continuation),
     as the name implies. This current continuation is a super
     special callable value that, when called, somehow causes the
-    #[code call/cc] call itself to return the value passed to it.
+    `(call/cc) call itself to return the value passed to it.
   p.
     This really flips my bits. I simply have no idea how to use this.
-    It sorta looks like my #[code return] primitive from earlier,
-    but the function's gotta be threaded through #[code call/cc]?
+    It sorta looks like my `(return) primitive from earlier,
+    but the function's gotta be threaded through `(call/cc)?
   p.
     The community once again comes to my rescue.
     A kind soul on Discord pointed me towards
@@ -818,17 +815,17 @@ block article
     that's worth watching in its entirety. It really does demystify
     the topic.
   p.
-    #[code call/cc] is briefly mentioned
+    `(call/cc) is briefly mentioned
     in the talk and it's explained how
     totally backwards and mind bending it is.
     It's sorta like exceptions but backwards,
-    as if the #[code catch] was next to the
-    #[code throw]? I think? I'm not even sure.
+    as if the `(catch) was next to the
+    `(throw)? I think? I'm not even sure.
   p.
-    Let's just forget about #[code call/cc].
+    Let's just forget about `(call/cc).
     @[against-callcc Plenty of reasons]
     not to insist on this thing anyway.
-    Continuations should be #[em delimited].
+    Continuations should be _(delimited).
     I have learned at least this much.
   p.
     The link between delimited continuations
@@ -837,7 +834,7 @@ block article
     the one idea that brings this mystical
     continuation business to the unwashed
     masses: delimited continuations are
-    just #[em resumable exceptions].
+    just _(resumable exceptions).
 
   p.
     It's as if Python could do this:
@@ -850,8 +847,8 @@ block article
           continuation(10)    # Makes throw return 10, prints 20
 
   p.
-    The #[code throw] breaks out of the #[code try]
-    block and enters the #[code except] block,
+    The `(throw) breaks out of the `(try)
+    block and enters the `(except) block,
     which is like a function with two arguments:
     the value thrown and the continuation at
     the moment it was thrown.
@@ -865,12 +862,12 @@ block article
     allows another possibility: it allows the
     handler code to plug a value back into
     the code being tried, as though the
-    #[code throw] primitive had returned it!
-    So in this example, after #[code throw]
-    breaks out of #[code try] and passes
-    control to #[code except], the exception
-    handler code #[em goes back into] the
-    #[code try] block with a new value,
+    `(throw) primitive had returned it!
+    So in this example, after `(throw)
+    breaks out of `(try) and passes
+    control to `(except), the exception
+    handler code _(goes back into) the
+    `(try) block with a new value,
     allowing it to finish as if it hadn't
     thrown an exception in the first place!
   p.
@@ -878,12 +875,12 @@ block article
     calling the continuation doesn't
     actually go back in there.
     By the time the exception handler
-    is in control, the #[code try] block
+    is in control, the `(try) block
     is no more. The stack has been unwound
     and the code has reached a completely
     different function. What actually happens
     when the continuation is called is it
-    #[em brings over] the #[code try] block
+    _(brings over) the `(try) block
     to the call site.
 
   +code
@@ -897,13 +894,13 @@ block article
               continuation(10)    # Dead code (in this case)
 
   p.
-    It's as if the #[code throw] primitive
-    #[em captured all the pending computations],
-    #[code try] block, exception handler and all,
+    It's as if the `(throw) primitive
+    _(captured all the pending computations),
+    `(try) block, exception handler and all,
     at its call site and reified them into
     a callable value. When called, the
     value gets replaced with those exact
-    computations but with the #[code throw]
+    computations but with the `(throw)
     primitive replaced with some real value.
 
   p.
@@ -915,7 +912,7 @@ block article
     the stack. The stack is full of values
     which direct the machine to do things
     in a specific order.
-    #[strong The stack is a form of code.]
+    *(The stack is a form of code.)
   p.
     It's this code that forms the "current continuation".
     It's this code that's being captured.
@@ -925,7 +922,7 @@ block article
   p.
     Another key insight in the keynote:
     continuations turn out to be just
-    #[code memcpy]ing the stack
+    `(memcpy)ing the stack
     back and forth.
 
   p.
@@ -941,10 +938,10 @@ block article
 
   p.
     We're going to need delimiters too.
-    The #[code return] primitive makes
+    The `(return) primitive makes
     use of an implicit delimiter managed
     by the lisp machine itself.
-    This general #[code control] primitive
+    This general `(control) primitive
     will manage the delimiter all by itself.
 
   +code
@@ -987,10 +984,10 @@ block article
     the handler function and the continuation
     delimiter and simply returns the result.
     So by itself it does nothing special.
-    It's a glorified #[code begin] primitive.
+    It's a glorified `(begin) primitive.
 
   p.
-    Enter the #[code transfer] primitive.
+    Enter the `(transfer) primitive.
 
   +code
     :prismjs(language=c)
@@ -1051,7 +1048,7 @@ block article
   aside
     p.
       A couple of frames are skipped because they're useless:
-      the function delimiter of #[code transfer],
+      the function delimiter of `(transfer),
       and an extraneous machine step that gets generated
       whenever the machine loops back to evaluate the operand.
       Only the second step matters when restoring the machine's
@@ -1059,35 +1056,35 @@ block article
 
   p.
     It knows that just below the delimiter it can find the
-    handler function that was passed to #[code control].
+    handler function that was passed to `(control).
     It will be calling that function shortly so it recovers
     that function into a variable.
   p.
-    Then it finds the function delimiter of the #[code control]
+    Then it finds the function delimiter of the `(control)
     primitive and copies all the stack frames between it
     and the top of the stack into a heap allocated buffer.
     Then it creates a lisp value that just holds this buffer.
-    #[em That's the continuation.]
+    _(That's the continuation.)
   p.
     Then it unwinds the stack to the function delimiter,
     effectively popping off the entire segment of the stack
     that was just copied into the heap. At this point
     the stack discipline matches the initial state of
-    the #[code control] primitive.
+    the `(control) primitive.
     We've really gone back in there!
     From the lisp machine's perspective,
-    we're inside #[code control] right now,
+    we're inside `(control) right now,
     and if we return a value it will be
-    as though #[code control] had returned it.
+    as though `(control) had returned it.
   p.
-    #[code transfer] now has the value, the continuation
+    `(transfer) now has the value, the continuation
     and the handler function. There is but one thing
-    left to do: evaluate #[code (handler value continuation)].
+    left to do: evaluate `((handler value continuation)).
     The return value of that expression becomes the result
-    of #[code control].
+    of `(control).
   p.
     I could stop here and call this an exceptions mechanism.
-    If I deleted the continuation capture code, it #[em would]
+    If I deleted the continuation capture code, it _(would)
     be just like the exceptions in every other language!
 
   h3 Making continuations callable
@@ -1100,7 +1097,7 @@ block article
     that holds an array of stack frames.
     This is a new value type which must be
     properly handled in various parts of
-    the system, #[em especially] in the
+    the system, _(especially) in the
     garbage collector. Fail to mark and
     sweep these things and memory leaks
     will be the least of your problems.
@@ -1149,7 +1146,7 @@ block article
               return true;
 
   p.
-    #[strong And finally...]
+    *(And finally...)
     When a value is applied to it,
     the machine spills the captured
     stack frames on top of the stack

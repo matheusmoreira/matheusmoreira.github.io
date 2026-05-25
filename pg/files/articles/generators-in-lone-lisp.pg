@@ -1,18 +1,15 @@
-extends /templates/article.pg
+extends /templates/code-article.pg
 
 append head
   title Generators in lone lisp
   meta(name=description content='The lone lisp generators implementation journey.')
   meta(name=keywords content='freestanding, linux, lisp, lone, generators')
-
-  link(rel=stylesheet href=/css/monokai.prism.css)
-
 block article
   h1 Generators in lone lisp
 
   p.
     Delimited continuations were not enough.
-    Gotta have more. Gotta have #[strong generators].
+    Gotta have more. Gotta have *(generators).
 
   p.
     Lone now features its own dedicated generator type.
@@ -52,36 +49,36 @@ block article
     Now, there is absolutely no doubt that
     @(/articles/delimited-continuations-in-lone-lisp delimited continuations)
     are powerful abstractions. It's true.
-    Generators #[em could] have been built on top of them.
+    Generators _(could) have been built on top of them.
     I think pretty much any sort of effects system
     can be built on top of them.
 
   p.
-    But just because you #[em can] doesn't mean you #[em should].
-    There is such a thing as having #[em too much power].
+    But just because you _(can) doesn't mean you _(should).
+    There is such a thing as having _(too much power).
     It often costs you. Powerful spells spend too much mana.
     Delimited continuations are no exception.
-    In their case, that cost is called #[code memcpy].
+    In their case, that cost is called `(memcpy).
 
   p.
     The point of generators is to generate values. That means iteration.
-    Loops. Hot paths. Big lists. #[em Infinite] lists. Spinning.
+    Loops. Hot paths. Big lists. _(Infinite) lists. Spinning.
     Round and round it goes. Over and over again. Eternally.
     Until it halts. Or not.
 
   p.
     So it seems straightforward to conclude that maybe
-    one should #[em not] be in the habit of #[code memcpy]ing
+    one should _(not) be in the habit of `(memcpy)ing
     entire stacks back and forth right in the middle of it all.
     I'll be the first to admit that lone is no paragon of speed
     but this fails even my considerably lax performance requirements.
     Can't build a foundation for iteration out of this.
 
   p.
-    Delimited continuations are #[em too powerful].
+    Delimited continuations are _(too powerful).
     Gotta slap some restraining bolts onto these things.
     Let's begin with the fact delimited continuations
-    are #[em multishot].
+    are _(multishot).
 
   p.
     The stack represents pending computations. Copy that stuff into a value.
@@ -90,7 +87,7 @@ block article
     back just the way they were.
 
   p.
-    Note that doing this does #[em not] consume the continuation.
+    Note that doing this does _(not) consume the continuation.
     You can restore the computations as many times as needed.
     It's a partial stack frame which gets copied when reactivated.
     There are no limits on how many times it can be copied.
@@ -98,14 +95,14 @@ block article
   p.
     Continuations are like small reusable computing subsets.
     A fragment of the stack, forever frozen in time.
-    They do nothing #[em unless you copy] them to the stack
-    of a #[em real] computer processor.
+    They do nothing _(unless you copy) them to the stack
+    of a _(real) computer processor.
     They can't compute on their own.
 
   p.
     Maybe we can get rid of all this copying
     if we increase their ability to compute.
-    #[em Real] computers have their own stacks.
+    _(Real) computers have their own stacks.
     Let's give continuations a stack of their own.
 
   +code
@@ -119,7 +116,7 @@ block article
   p.
     The computations performed by continuations are determined
     by the subset of the stack they captured when they were created.
-    #[em Real] computers start as blank slate. Gotta explicitly feed
+    _(Real) computers start as blank slate. Gotta explicitly feed
     them a program to run. Why not a function?
 
   +code
@@ -140,15 +137,15 @@ block article
     be swapped in and out as needed. The machine registers can be shared.
 
   p.
-    And just like that, #[strong coroutines] are born.
+    And just like that, *(coroutines) are born.
     They are essentially separate stacks that you can
-    switch to at will. #[em Switch to], not copy over.
-    Begone, #[code memcpy]. Begone.
+    switch to at will. _(Switch to), not copy over.
+    Begone, `(memcpy). Begone.
 
   h2 From coroutines to semicoroutines
 
   p.
-    It turns out that coroutines are #[em still] too powerful.
+    It turns out that coroutines are _(still) too powerful.
     Sure, we can switch stacks freely now but that just means
     we have a completely new class of problems to think about.
     Now we gotta keep track of all those independent stacks.
@@ -157,7 +154,7 @@ block article
 
   p.
     Let's rein them in a little more. In order to reduce cognitive load,
-    we'll choose #[em where] the coroutines will switch to ahead of time
+    we'll choose _(where) the coroutines will switch to ahead of time
     so that the programmer doesn't have to think about it.
 
   +code
@@ -171,7 +168,7 @@ block article
       };
 
   p.
-    #[em Semi]coroutines. Just normal coroutines
+    _(Semi)coroutines. Just normal coroutines
     that keep track of where they are supposed
     to yield control back to. In this case,
     the code that called them.
@@ -197,7 +194,7 @@ block article
   p.
     Some sleight of hand is necessary
     in order to make the magic happen.
-    Most of it is in the #[code APPLICATION]
+    Most of it is in the `(APPLICATION)
     step of the machine which handles calling
     the generators.
 
@@ -311,7 +308,7 @@ block article
   h2 The primitives
 
   p.
-    The #[code generator] primitive is pretty boring.
+    The `(generator) primitive is pretty boring.
     It's just the constructor for generator values.
     Its entire purpose is to run this line
     and return the result:
@@ -325,7 +322,7 @@ block article
     Chosen by fair dice roll. Guaranteed to be random.
     It's totally got nothing to do with joining
     some elite functional programming cabal.
-    Nothing to see here. The #[code yield]
+    Nothing to see here. The `(yield)
     primitive is far more interesting.
 
   +code
@@ -365,7 +362,7 @@ block article
       }
 
   p.
-    The #[code yield] primitive finds the generator delimiter
+    The `(yield) primitive finds the generator delimiter
     at the base of the stack, for that is why it was put there.
     It saves the generator's stack, for much has happened
     since the last snapshot. It restores the caller's stack,
@@ -393,7 +390,7 @@ block article
     Whether it is the imaginary mathemagical realm,
     the narrow and broken tunnels of I/O
     or the vast spinning magnetic flatlands of rust,
-    we shall brave it all. For #[em that], is our duty.
+    we shall brave it all. For _(that), is our duty.
 
   p.
     ... Ahem.

@@ -1,12 +1,9 @@
-extends /templates/article.pg
+extends /templates/code-article.pg
 
 append head
   title Baby’s Second Garbage Collector
   meta(name=description content='Implementation of the conservative garbage collector in lone lisp.')
   meta(name=keywords content='conservative, garbage, collector, mark, sweep')
-
-  link(rel=stylesheet href=/css/monokai.prism.css)
-
 block article
   h1 Baby’s Second Garbage Collector
 
@@ -17,7 +14,7 @@ block article
       how langauge get memory
     figcaption
       cite.
-        A #[em very] confused programming neophyte
+        A _(very) confused programming neophyte
 
   p.
     Thirteen years ago,
@@ -34,7 +31,7 @@ block article
     Bob Nystrom wasn't kidding about Baby's First Garbage Collector.
     It absolutely does collect garbage, and a version of it absolutely
     did ship with my dynamic language, @(https://github.com/lone-lang/lone lone lisp).
-    In fact, if I remember correctly, lone actually #[em still ships]
+    In fact, if I remember correctly, lone actually _(still ships)
     with it, believe it or not. He wasn't kidding about communion
     with the Elder Gods either. I can feel my magic level increasing.
     Wizardry is within reach.
@@ -55,16 +52,16 @@ block article
 
   p.
     Baby's First Garbage Collector is what is called
-    a #[em precise] garbage collector. It #[em knows]
+    a _(precise) garbage collector. It _(knows)
     where all the objects are at all times. It knows
     where they live. It engages in Orwellian surveillance
     of those objects. It is always ready to stop the world
     and reap those objects the second they step out of the
     stack. It oppresses the objects with such precision and
-    automation, it is impossible for even #[em a single one]
+    automation, it is impossible for even _(a single one)
     of those objects to escape this fate. Thus it rules the
     objects with a silicon fist, quite literally deciding
-    which objects live or die, and even #[em when] they die.
+    which objects live or die, and even _(when) they die.
     Such is the life of an object in the dynamic lands...
 
   p.
@@ -72,7 +69,7 @@ block article
     The poor objects wanted freedom from the tyranny of the
     garbage collector. They needed to find a way to escape.
     But how? Where could they go? They didn't know.
-    They just knew they had to escape #[em the stack].
+    They just knew they had to escape _(the stack).
 
   +code
     :prismjs(language=c)
@@ -87,8 +84,8 @@ block article
 
   p.
     There they go. They are free now.
-    #[em Free] of the reaping machine's clutches.
-    #[em Free] to enjoy their lives as they see fit,
+    _(Free) of the reaping machine's clutches.
+    _(Free) to enjoy their lives as they see fit,
     until the very end of that function.
     For those ten microseconds or less,
     they're free.
@@ -96,7 +93,7 @@ block article
   p.
     Their happiness is short-lived.
     You see, the garbage collector
-    #[em has foreseen] this and is
+    _(has foreseen) this and is
     well prepared: it has implanted
     every single object with a tracker
     since the day they were born,
@@ -115,10 +112,10 @@ block article
 
   p.
     The garbage collector doesn't do this to just anybody.
-    It only does this to #[em garbage]. It only does this
+    It only does this to _(garbage). It only does this
     to the undesirables. The problem is when those objects
     escaped and went on to enjoy their well-earned freedom,
-    they #[em became garbage] in the garbage collector's
+    they _(became garbage) in the garbage collector's
     eyes. The reaper tried calling them at work and they
     didn't answer. So it set about hunting them down.
     Some of these objects were perfectly good members
@@ -161,7 +158,7 @@ block article
   p.
     The resources available at the garbage collector's
     disposal were substantial. It had the object census.
-    It had a list of #[em roots] which it would search
+    It had a list of _(roots) which it would search
     for objects. It would reap all objects it didn't
     find in those roots.
 
@@ -171,7 +168,7 @@ block article
     so that they may be recovered later when needed.
     It is when they escape from this stack that they
     create havoc in dynamic society. But where are
-    they escaping #[em to]?
+    they escaping _(to)?
 
   h2 The native stack
 
@@ -201,7 +198,7 @@ block article
     look for them. Nothing else mattered.
     However, the shadow of the 64-bit address
     space is vast. It couldn't just start
-    from anywhere. It had to be #[em told]
+    from anywhere. It had to be _(told)
     where to start.
 
   p.
@@ -212,10 +209,10 @@ block article
     a great kernel are heard, a certain "Linux".
 
   p.
-    It #[em is] known, however, that the program
+    It _(is) known, however, that the program
     that executes beneath the dynamic reality
     eventually reaches lisp land. Beyond this
-    point, no lisp object could #[em ever] travel,
+    point, no lisp object could _(ever) travel,
     for the environment was far too hostile for them.
     Many debugging expeditions were mounted to determine
     the exact point where this occurred. Many objects gave
@@ -262,7 +259,7 @@ block article
 
   p.
     Close examination of the stack pointer revealed
-    that it was #[em aligned] to some power of two,
+    that it was _(aligned) to some power of two,
     as many such things often are. They must be,
     lest they be cursed with slowdown and exceptions.
     This was useful though, since it allowed the
@@ -292,9 +289,9 @@ block article
       }
 
   p.
-    And #[em that], as they say, was #[em it].
+    And _(that), as they say, was _(it).
     It wasn't perfect, few things in life ever are,
-    but it was #[em enough]. The garbage collector
+    but it was _(enough). The garbage collector
     would loop through all the words on the stack,
     looking for pointers inside its own heap,
     pointers to the objects that ran away.
@@ -308,11 +305,11 @@ block article
     It had no choice but to believe the lies, for only those
     enlightened by the long-lost knowledge of the type system
     of the native program, software whose compilation took
-    place #[em eons] ago, would have a discerning enough eye
+    place _(eons) ago, would have a discerning enough eye
     to tell the difference between phantoms and real objects.
     This was an acceptable inefficiency. It kept dead objects
     alive... But not once did it lead to the death of living
-    objects. Yes. It was #[em enough].
+    objects. Yes. It was _(enough).
 
   h2 The heap pointers
 
@@ -332,7 +329,7 @@ block article
     plains until it had compiled the addresses of all values.
     Careful study of their living arrangements revealed
     a very useful fact that would no doubt be mercilessly
-    weaponized against them: #[em they lived next to each other]
+    weaponized against them: _(they lived next to each other)
     in a structure they often referred to as the heap.
 
   +code
@@ -388,7 +385,7 @@ block article
     a distance. This can only mean one thing.
 
   p.
-    The task was #[em not] done yet.
+    The task was _(not) done yet.
     Some objects were still hiding.
 
   p.
@@ -403,7 +400,7 @@ block article
     When in doubt, one must read the ancient source tomes
     written by those who came before us. People like
     Hans Boehm, Alan Demers and Mark Weiser,
-    who once upon a time #[em also] sat down and decided to write
+    who once upon a time _(also) sat down and decided to write
     @[bdwgc-wiki a garbage collector].
     For C and C++. Yes, you read that right.
 
@@ -415,7 +412,7 @@ block article
 
   p.
     @[bdwgc-porting The porting guide]
-    mentioned a function named #[code GC_with_callee_saves_pushed]
+    mentioned a function named `(GC_with_callee_saves_pushed)
     whose purpose is to spill the registers on the stack so that
     the garbage collector may trace it.
     @[bdwgc-callee-saves And how was it implemented?]
@@ -435,7 +432,7 @@ block article
       (void) setjmp(regs);
 
   p.
-    #[code setjmp], of all things.
+    `(setjmp), of all things.
 
   p.
     The porting guide frowns upon the assembly
@@ -463,7 +460,7 @@ block article
     the ritual.
 
   p.
-    I had to know. The answer had to be in #[code setjmp].
+    I had to know. The answer had to be in `(setjmp).
 
   h3 Spilling the registers
 
@@ -484,9 +481,9 @@ block article
     I knew exactly what it was that I had to do.
 
   p.
-    I prepared myself with study, then entered the #[code x86_64] realm.
-    With my editor's cursor, I conjured into existence an #[em avalanche]
-    of #[code mov] instructions.
+    I prepared myself with study, then entered the `(x86_64) realm.
+    With my editor's cursor, I conjured into existence an _(avalanche)
+    of `(mov) instructions.
 
   +code
     :prismjs(language=c)
@@ -517,10 +514,10 @@ block article
     Nothing else mattered.
 
   p.
-    I entered the #[code aarch64] realm.
+    I entered the `(aarch64) realm.
     The architecture has almost twice
     as many general-purpose registers
-    as #[code x86_64]. I cracked my knuckles.
+    as `(x86_64). I cracked my knuckles.
 
   +code
     :prismjs(language=c)

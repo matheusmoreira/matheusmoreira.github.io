@@ -4,6 +4,8 @@ html(lang=en)
     base(href='https://www.matheusmoreira.com/')
     meta(charset=utf-8)
     meta(name=referrer content=no-referrer)
+    block author
+      meta(name=author content='Matheus Afonso Martins Moreira')
     link(rel=stylesheet href=/css/matheusmoreira.css)
     block head
   body

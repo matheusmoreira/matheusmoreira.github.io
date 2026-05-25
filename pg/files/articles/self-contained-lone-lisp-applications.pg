@@ -1,12 +1,9 @@
-extends /templates/article.pg
+extends /templates/code-article.pg
 
 append head
   title Self-contained Linux applications with lone lisp
   meta(name=description content='Creating standalone Linux applications with lone.')
   meta(name=keywords content='freestanding, standalone, self-contained, linux, application, system call, syscall, lone, lisp')
-
-  link(rel=stylesheet href=/css/monokai.prism.css)
-
 block article
   h1 Self-contained Linux applications with lone lisp
   p.
@@ -40,9 +37,9 @@ block article
     to some file system location and then reads it back in.
     I came up with a different solution.
 
-  h2 A simple implementation of #[code env] in lone lisp
+  h2 A simple implementation of `(env) in lone lisp
   p.
-    The #[code env] utility is among the simplest programs
+    The `(env) utility is among the simplest programs
     available in Unix-like operating systems. It's most
     fundamental function is to print the user's environment.
     That function can be trivially implemented in lone lisp:
@@ -62,13 +59,13 @@ block article
       $ ./lone < env.ln
       { "HOME" "/home/matheus" "EDITOR" "vim" … }
 
-  h3 Embedding #[code env.ln] into the interpreter
+  h3 Embedding `(env.ln) into the interpreter
   p.
-    In order to transform #[code env.ln]
-    into a self-contained #[code env] program,
+    In order to transform `(env.ln)
+    into a self-contained `(env) program,
     the lone lisp code must be embedded into
     a copy of the interpreter. This can be achieved
-    by the purpose-built #[code lone-embed] tool:
+    by the purpose-built `(lone-embed) tool:
 
   +code
     :prismjs(language=shell)
@@ -85,7 +82,7 @@ block article
 
   h2 Elven segments
   p.
-    Tracing the system calls of the application with #[code strace]
+    Tracing the system calls of the application with `(strace)
     reveals an interesting property:
 
   +code
@@ -133,14 +130,14 @@ block article
     ELF segments, also called program headers,
     describe the memory image of the program.
     There are many types of segments but especially
-    interesting are the #[code LOAD] segments which
+    interesting are the `(LOAD) segments which
     tell Linux which parts of the file must be
     mapped to which addresses in order for
     the program to work correctly.
   p.
-    The #[code lone-embed] tool copies
+    The `(lone-embed) tool copies
     the lisp code into the ELF and then
-    creates a #[code LOAD] segment for it.
+    creates a `(LOAD) segment for it.
     Linux then maps in the embedded code
     automatically at load time before the
     interpreter has even started.
@@ -217,7 +214,7 @@ block article
     @[elf-program-header ELF program header structures].
     Given this pointer, all the program has to do
     is scan the table and find the correct entry.
-    One does not simply search for #[code LOAD] entries, however.
+    One does not simply search for `(LOAD) entries, however.
     Attempting to do it uncovers a couple of problems.
   p.
     The first problem is the fact there are lots of these loadable
@@ -232,18 +229,18 @@ block article
   h4 The lone segment
   p.
     In order to solve this, I created my own custom segment type:
-    the #[code LONE] segment.
+    the `(LONE) segment.
   p.
     ELF provides an incredibly generous numeric range
     for operating system-specific segments.
-    All the values between #[code LOOS] and #[code HIOS]
+    All the values between `(LOOS) and `(HIOS)
     are free for operating systems to allocate.
     Those definitions represent a range of integers
-    between #[code 0x60000000] and #[code 0x6FFFFFFF] inclusive.
+    between `(0x60000000) and `(0x6FFFFFFF) inclusive.
     That's 268,435,455 magic numbers.
   p.
-    So I just picked one. That's what the #[code LOOS+0xc6f6e65] means.
-    Spelled out #[code lone] in ASCII and it just worked itself out.
+    So I just picked one. That's what the `(LOOS+0xc6f6e65) means.
+    Spelled out `(lone) in ASCII and it just worked itself out.
 
   +code
     :prismjs(language=c)
@@ -254,7 +251,7 @@ block article
     I figured if GNU can do it then I can do it too.
 
   p.
-    The #[code LONE] segment is not loadable
+    The `(LONE) segment is not loadable
     and thus does not have any alignment requirements,
     allowing it to describe the embedded segment exactly.
     It also serves as a magic number which makes it trivial
@@ -323,17 +320,17 @@ block article
 
   h2 Special linker features
   p.
-    Remember the #[code lone-embed] tool which I briefly mentioned
+    Remember the `(lone-embed) tool which I briefly mentioned
     at the beginning of the articled? It's an ELF patching tool
     which I built specifically for this purpose and it's doing
-    #[em a lot of] heavy lifting here.
+    _(a lot of) heavy lifting here.
   p.
     When programs are compiled and linked,
     the program headers are set in stone.
     Yet to do all of this I needed to
     append new segments to the program
     header table. This turned out to be
-    #[em much] harder than anticipated.
+    _(much) harder than anticipated.
 
   p.
     The program header table usually follows
@@ -341,7 +338,7 @@ block article
     of the file. Appending new items to it
     would require resizing the table,
     which would require shifting up the addresses
-    of #[em everything] that comes after it,
+    of _(everything) that comes after it,
     invalidating pointers to the old addresses.
     As far as I can tell, it just can't be done
     without reinventing the linker itself.
@@ -352,13 +349,13 @@ block article
     it even reached the entry point, gdb was useless,
     I couldn't understand what was going on
     and was reduced to desperately dumping
-    #[code readelf] output on stackoverflow
+    `(readelf) output on stackoverflow
     in hopes someone would spot the problem.
-    Well #[em someone] did and quickly at that
+    Well _(someone) did and quickly at that
     but clearly this was not a sustainable
     software development strategy.
 
-  h3 The #[code mold] linker saves the day
+  h3 The `(mold) linker saves the day
   p.
     The linker is in a privileged position.
     It knows everything there is to know
@@ -369,12 +366,12 @@ block article
   p.
     So I started learning
     @(https://sourceware.org/binutils/docs/ld/Scripts.html linker script).
-    Turns out it has a #[code PHDRS] command
+    Turns out it has a `(PHDRS) command
     which is exactly what I needed but I couldn't
     figure out how to use it. I just kept getting
     "unable to allocate headers" errors no matter
     what I tried. I concluded it would be easier
-    to simply #[em ask] for this feature instead.
+    to simply _(ask) for this feature instead.
   p.
     So I
     @[binutils-email emailed]
@@ -383,29 +380,29 @@ block article
     @[llvm-issue LLVM issue]...
 
   p.
-    Then I opened a #[code mold] issue.
+    Then I opened a `(mold) issue.
     The maintainer immediately understood
     what I wanted to do and
     @[mold-commit made it happen]
     with what was essentially a single line of code change.
-    Just #[em beyond awesome].
+    Just _(beyond awesome).
   p.
     I waited eagerly for the new release
     but got so excited I built this huge
-    C++ project from source #[em on my smartphone]
+    C++ project from source _(on my smartphone)
     just to integrate lone with it.
     All I had to do was put
-    #[code -Wl,--spare-program-headers,2]
-    in the #[code LDFLAGS].
-    It gave me two #[code NULL] program headers
+    `(-Wl,--spare-program-headers,2)
+    in the `(LDFLAGS).
+    It gave me two `(NULL) program headers
     for my patching utility to edit any way it wanted.
-    It worked #[em perfectly].
+    It worked _(perfectly).
   p.
-    So far #[code mold] is the only linker
+    So far `(mold) is the only linker
     with this feature and it's absolutely
-    required for #[code lone-embed] to work.
+    required for `(lone-embed) to work.
     It will outright refuse to patch the ELF
-    if it doesn't find at least two #[code NULL]
+    if it doesn't find at least two `(NULL)
     program headers in it.
 
   p.
@@ -413,10 +410,10 @@ block article
     Unless I can figure out a way to move
     the program header table to the end of the file
     without breaking everything, I'm pretty much
-    locked into using #[code mold].
+    locked into using `(mold).
     Well, I don't really mind.
     It's an awesome linker
-    #[em and] it's free software.
+    _(and) it's free software.
     I'm OK with this!
 references
   elf-program-header https://en.wikipedia.org/wiki/Executable_and_Linkable_Format#Program_header

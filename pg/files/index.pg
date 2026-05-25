@@ -2,7 +2,6 @@ extends /templates/master.pg
 
 append head
   title matheusmoreira.com
-  meta(name='author' content='Matheus Afonso Martins Moreira')
   meta(name='description' content='Stuff I think about and don\'t want to forget.')
 
 block body

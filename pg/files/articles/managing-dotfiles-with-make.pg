@@ -1,12 +1,11 @@
-extends /templates/article.pg
+extends /templates/code-article.pg
 
-include /mixins/file-system.pg
+include @pugneum-mixins/file-system.pg
 
 append head
   title Dotfiles with make
   meta(name=description content='Using make as a configuration file management tool.')
   link(rel=stylesheet href=/css/tree.css)
-  link(rel=stylesheet href=/css/monokai.prism.css)
 
 block article
 
@@ -35,7 +34,7 @@ block article
     is to mirror the structure of the home directory.
     Like this:
 
-  +file-system
+  +file-system(tree)
     +directory(~/.files)
       +directory(~)
         +file(.bash_profile)
@@ -45,9 +44,9 @@ block article
       +file(GNUmakefile)
 
   p.
-    The #[code ~] directory represents the current user's home directory.
-    Configuration files in #[code $HOME] will be symbolic links to their
-    corresponding files in the #[code ~] directory of the repository.
+    The `(~) directory represents the current user's home directory.
+    Configuration files in `($HOME) will be symbolic links to their
+    corresponding files in the `(~) directory of the repository.
     Make's job is to automatically create those symbolic links.
 
   +code
@@ -59,11 +58,11 @@ block article
 
   h2 Writing the makefile
   p.
-    All link targets are rooted in the repository's #[code ~] directory,
+    All link targets are rooted in the repository's `(~) directory,
     so the first thing that must be done is find the repository itself.
   p.
     Make always knows the location of the makefile.
-    Since it is located in the root of the #[code .files] repository,
+    Since it is located in the root of the `(.files) repository,
     it's possible to find the repository itself through it.
 
   +code
@@ -74,20 +73,20 @@ block article
   p.
     A reference to the home directory
     is already available in make
-    via the #[code $HOME] environment variable
-    and #[code ~] also works according to
+    via the `($HOME) environment variable
+    and `(~) also works according to
     @[make-tilde the documentation].
     An equally easy way to refer to the dotfiles repository's
-    #[code ~] directory would be nice.
+    `(~) directory would be nice.
 
   +code
     :prismjs(language=makefile)
       ~ := $(abspath $(dotfiles)/~)
 
   p.
-    Now it is possible to write #[code ~] and #[code $(~)]
+    Now it is possible to write `(~) and `($(~))
     for the user's home directory and for the repository's
-    #[code ~] directory respectively.
+    `(~) directory respectively.
 
   h3 The symbolic linking rule
   p.
@@ -101,14 +100,13 @@ block article
 
       ~/% : $(~)/% force
       	mkdir -p $(@D)
-      	ln -snf $@ $<
-      endef
+      	ln -snf $< $@
 
   p.
     @[make-automatic-vars Automatic variables]
     are used in the recipe for maximum brevity.
-    #[code $@] and #[code $<] refer to the link target and link name.
-    #[code $(@D)] refers to the directory of the new link,
+    `($@) and `($<) refer to the link name and link target.
+    `($(@D)) refers to the directory of the new link,
     ensuring the whole tree exists before attempting to create it.
 
   h3 Generalizing and metaprogramming
@@ -126,13 +124,13 @@ block article
       define rule.template
       $(1)/% : $(2)/% force
       	mkdir -p $$(@D)
-      	ln -snf $$@ $$<
+      	ln -snf $$< $$@
       endef
 
       rule.define = $(eval $(call rule.template,$(1),$(2)))
 
   p.
-    The #[code rule.define] function will generate
+    The `(rule.define) function will generate
     and evaluate the original rule definition.
     It's really easy to use:
 
@@ -165,10 +163,10 @@ block article
       .DEFAULT_GOAL := all
 
   p.
-    This sets up a phony target for #[code bash],
+    This sets up a phony target for `(bash),
     maintains a list of all phony targets
     and ensures they are declared as such,
-    creates an #[code all] phony target
+    creates an `(all) phony target
     that links everything and sets it
     as the default goal.
   p.
