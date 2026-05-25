@@ -10,7 +10,7 @@ body {
 body {
   margin: 0;
   padding: 0;
-  font: 24px/1.5 var(--sans-serif-font);
+  font: 200%/1.4 var(--sans-serif-font);
   color: var(--text-color);
   background: var(--background-color);
 }
@@ -62,8 +62,8 @@ header nav a {
 
 main {
   max-width: 80ch;
-  margin: 40px auto;
-  padding: 0 40px;
+  margin: 2ch auto;
+  padding: 0 2ch;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -102,9 +102,9 @@ code {
 }
 
 body p code {
-  padding: 0.25ch;
-  background-color: var(--border-color);
-  color: var(--background-color);
+  padding: 0 calc(1ch / 3) 0.1em calc(1ch / 3);
+  border: 1px solid var(--border-color);
+  line-height: calc(5em / 3);
 }
 
 a {
