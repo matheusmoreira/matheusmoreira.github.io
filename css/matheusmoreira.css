@@ -111,9 +111,10 @@ code {
 }
 
 body p code {
-  padding: 0 calc(1ch / 3) 0.1em calc(1ch / 3);
+  margin: 0 0.1ch;
+  padding: 0.125em 0.2ch;
   border: 1px solid var(--border-color);
-  line-height: calc(5em / 3);
+  line-height: 1.7em;
 }
 
 a {
