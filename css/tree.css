@@ -1,5 +1,6 @@
 .tree {
   --tree-color: var(--border-color);
+  --tree-thickness: 0.125em;
 }
 
 ul.tree,
@@ -10,7 +11,7 @@ ul.tree ul {
 
 ul.tree li {
   margin-left: 1em;
-  border-left: 2px solid var(--tree-color);
+  border-left: var(--tree-thickness) solid var(--tree-color);
 }
 
 ul.tree li code {
@@ -24,16 +25,16 @@ ul.tree li code {
 ul.tree li:not(ul.tree > li:first-child) code::before {
   content: "";
   position: absolute;
-  left: -2px;
+  left: calc(-1 * var(--tree-thickness));
   width: 0.75em;
   height: 0.5em;
-  border: 2px solid var(--tree-color);
+  border: var(--tree-thickness) solid var(--tree-color);
   border-top: 0 none transparent;
   border-right: 0 none transparent;
 }
 
 ul.tree li:last-child {
-  border-left: 2px solid transparent;
+  border-left: var(--tree-thickness) solid transparent;
 }
 
 ul.tree li:has(ul) > code::after {
