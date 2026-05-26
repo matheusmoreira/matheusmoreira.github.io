@@ -1,0 +1,591 @@
+extends /templates/code-article.pg
+
+append head
+  title The lone lisp heap
+  meta(name=description content='The heap implementation of lone lisp.')
+  meta(name=keywords content='freestanding, linux, lone, lisp, heap,
+memory allocation, memory management, allocator, garbage collection,
+mremap, mmap, tagged pointer, array, virtual memory')
+
+block article
+
+  h1 The lone lisp heap
+
+  p.
+    Like many dynamic languages out there, @[lone] started out simple.
+    It was essentially a collection of data structures written in C,
+    an `(union) comprising all of those types, a typed value structure
+    containing the union plus metadata, and a custom language whose
+    entire purpose is to bring all these values together into patterns
+    that resemble working programs.
+
+  +code
+    :prismjs(language=c)
+      struct lone_lisp_list   { /* ... */ };
+      struct lone_lisp_vector { /* ... */ };
+      struct lone_lisp_table  { /* ... */ };
+      /* ... */
+
+      enum lone_lisp_heap_value_type {
+          LONE_LISP_TYPE_LIST,
+          LONE_LISP_TYPE_VECTOR,
+          LONE_LISP_TYPE_TABLE,
+          /* ... */
+      };
+
+      struct lone_lisp_heap_value {
+          bool live: 1;
+          bool marked: 1;
+          /* ... */
+
+          enum lone_lisp_heap_value_type type;
+
+          union {
+              struct lone_lisp_list list;
+              struct lone_lisp_vector vector;
+              struct lone_lisp_table table;
+              /* ... */
+          } as;
+      };
+
+  p.
+    When I put it this way, the language itself seems almost incidental
+    to the virtual machine work. That's because it is. Lone was in fact
+    not designed ahead of time. It was and still is being constructed
+    in real time. It's almost as if the language itself is _(arising)
+    as a consequence of its own implementation. It grows in complexity
+    alongside the knowledge and understanding of its creator.
+
+  p.
+    At first I was a neophyte. I was attracted to ideas that were almost
+    painfully simple, almost too naive to cope with the harsh reality
+    of the world. The code reflected that.
+
+  p.
+    Take the above structures, for example. How are such values created?
+    My first instinct is to simply allocate some memory for each object.
+    Call `(malloc) with the size of the structure, then initialize the
+    memory it returns. It's that easy.
+
+  p Right?
+
+  h2 Memory allocation
+
+  p.
+    Lone is a lisp interpreter written in freestanding C.
+    There is no dynamic memory allocation in freestanding C.
+    There is no such thing as `(malloc). There is no `(libc).
+    There is only me and the code. If I wanted `(malloc),
+    I would have to write it myself.
+
+  p.
+    So I wrote it. I read up on everything I could find online
+    about memory and its allocation. Then I made my own
+    memory allocator.
+
+  p.
+    To manage a memory block, the allocator needs to describe it.
+    Let's start with the basics. The most basic information
+    about a piece of data is its location and its size.
+
+  +code
+    :prismjs(language=c)
+      struct lone_memory {
+        size_t size;
+        unsigned char pointer[];
+      };
+
+  p.
+    The allocator must also keep track of whether the block
+    is free or currently in use. Otherwise, there would be
+    *(chaos).
+
+  +code
+    :prismjs(language=c)
+      struct lone_memory {
+        bool free;
+        size_t size;
+        unsigned char pointer[];
+      };
+
+  p.
+    This is enough to manage any one block of memory.
+    If it's free, then the allocator can give the block
+    to whoever asks. If it's not free, then it can't.
+    If they ask for less or exactly as much memory
+    as this block contains, then it can be given out.
+    If they ask for more, then it can't.
+
+  p.
+    I started from literally nothing.
+    Now I've got the one.
+    Time to handle infinity.
+
+  +code
+    :prismjs(language=c)
+      struct lone_memory {
+        struct lone_memory *prev, *next;
+        bool free;
+        size_t size;
+        unsigned char pointer[];
+      };
+
+  p.
+    Simply link the blocks to each other.
+    Now if some code requests a block,
+    the allocator can walk through the
+    list of all blocks and search for
+    any block that fits.
+
+  p.
+    And that's exactly what the allocator does.
+
+  +code
+    :prismjs(language=c)
+      for (block = system->memory; block; block = block->next)
+          if (block->free && block->size >= size)
+              break;
+
+      if (!block) { return 0; }
+
+      block->free = false;
+      return block->pointer;
+
+  p.
+    Searches the list of blocks and literally returns
+    the first block that fits. This thing could end up
+    returning 16 KiB blocks for 64 byte requests. Crude,
+    but effective. Incredibly wasteful, of course.
+    Potentially more wasteful than `(mmap)ing pages
+    for every single allocation.
+
+  p.
+    The memory allocator can do better than this.
+    Why not cut the block up into smaller chunks?
+
+  +code
+    :prismjs(language=c)
+      block->free = false;
+      lone_memory_split(block, size);
+      return block->pointer;
+
+  p.
+    Split the block into two blocks: an allocated block
+    of exactly the requested size, and a new free block
+    for any excess memory that might remain.
+
+  +code
+    :prismjs(language=c)
+      size_t excess = block->size - size;
+
+      /* create a new block only if there's enough
+         space for memory block descriptor + 1 byte */
+
+      if (excess >= sizeof(struct lone_memory) + 1) {
+          new = (struct lone_memory *) (block->pointer + size);
+
+          /* weave the new block into the linked lists */
+
+          new->free = true;
+          new->size = excess - sizeof(struct lone_memory);
+          block->size = size;
+      }
+
+  p.
+    The excess memory block gets conjured up out of thin air:
+    the allocator simply drops a new memory block descriptor
+    right after the end of the previous memory block.
+    When the links are established, the excess memory
+    can be allocated like any other memory block.
+
+  p.
+    Memory deallocation is even simpler: just mark the block as free.
+    The block descriptor is just behind the pointer, trivially reachable.
+
+  +code
+    :prismjs(language=c)
+      struct lone_memory *block = ((struct lone_memory *) pointer) - 1;
+      block->free = true;
+
+  p.
+    This is enough, but the allocator can do better.
+    It can check if surrounding blocks are also free,
+    and undo the split if that is the case.
+
+  +code
+    :prismjs(language=c)
+      lone_memory_coalesce(block);
+      lone_memory_coalesce(block->prev);
+
+  p.
+    Coalescing a memory block is simple.
+    When two adjacent blocks are free,
+    one block literally absorbs the other,
+    block descriptor and all.
+
+  +code
+    :prismjs(language=c)
+      if (block && block->free) {
+          next = block->next;
+          if (next && next->free) {
+              block->size += next->size + sizeof(struct lone_memory);
+              /* unlink the blocks */
+          }
+      }
+
+  p.
+    *(That's it.) A simple yet complete first fit, split/coalesce
+    memory allocator. Give it a large block of memory to manage
+    and watch as it cuts the block up into small chunks and hands
+    them all out to anyone who asks.
+
+  +code
+    :prismjs(language=c)
+      #define LONE_MEMORY_SIZE (64 * 1024)
+      static unsigned char memory[LONE_MEMORY_SIZE];
+
+      lone_lisp_initialize(&lone, memory, sizeof(memory));
+
+  p.
+    How good is this memory allocator? Let's just say that
+    *(terrible) doesn't quite do it justice. This thing will
+    linearly scan the list of blocks for every single allocation.
+    It will fail pretty hard at keeping memory fragmentation
+    under control, which not only wastes memory but could
+    result in entirely avoidable out-of-memory situations.
+    Small leftover blocks tend to accumulate near the start
+    of the list, further compounding the problems as it runs.
+    Prefixing block descriptors to every block means metadata
+    overhead of around 30% to 50% for typical allocations,
+    not to mention the fact those headers are classic targets
+    for exploitation. The shortcomings of this allocator
+    could fill up an entire article all by themselves.
+
+  p.
+    Nevertheless, lone made do with this thing for _(around
+    three years). For all of its flaws, it absolutely does
+    allocate memory, and memory was all that I needed
+    to make some objects. I didn't really care about
+    the allocator, I just needed some values I could
+    play with as I developed the language.
+
+  p.
+    Yeah, I'll totally go ahead and do that now.
+    Allocate some values, I mean. Everything's
+    gonna be simple now.
+
+  p Right?
+
+  h2 Scanning for pointers
+
+  p.
+    It's not that simple. Other parts of the code
+    have requirements that must be fulfilled.
+
+  p.
+    The @[gc lone lisp garbage collector] is conservative.
+    It walks the stack and scrutinizes everything it finds.
+    It wants to know whether they are pointers to lisp objects.
+    In order to do that, it must maintain a list of every
+    single lisp value pointer.
+
+  p.
+    Sounds simple when I put it that way. Why not just do it?
+    Just scan the stack and compare _(every single word)
+    against _(every single lisp pointer), right? Right?!
+
+  p.
+    Yeah, no. That's not going to happen.
+    Well, not unless _(you) want to get
+    into the @[aq quadratic hall of shame].
+    There's got to be a way,
+    some clever data structure
+    to make the problem go away...
+
+  h2 The first heap
+
+  p.
+    Wait, I think I know what to do.
+    During my tenure in the Ruby mines many eons ago,
+    I just so happened to pick up some tricks.
+    That includes this one:
+
+  +code
+    :prismjs(language=c)
+      struct lone_lisp_heap {
+          struct lone_lisp_heap *next;
+          struct lone_lisp_heap_value values[LONE_LISP_HEAP_VALUE_COUNT];
+      };
+
+  p.
+    A linked list of arrays of values!
+
+  p.
+    General purpose memory allocators provide no guarantees;
+    those must be forged by hand by way of data structures.
+    Now objects aren't individually allocated any more,
+    _(the language buys them in bulk). The lone heap is
+    essentially a list of nice little chunks of lisp objects,
+    all lying right next to each other with zero gaps
+    in between them. Now the garbage collector can simply
+    check if pointers fall within range and call it a day.
+    Alright!
+
+  p.
+    Mechanically, @[1st it's almost identical] to the general
+    purpose memory allocator. It just works at the lisp value
+    level instead of working at the byte level. There's a
+    linked list of chunks, it walks through them all.
+    For each chunk, it loops over the values. If it finds
+    a dead value, it just returns it. Chunks are allocated
+    with all values dead. The garbage collector just kills
+    the values in those slots instead of deallocating them.
+
+  p.
+    The allocator isn't really allocating values,
+    it's _(resurrecting) them.
+
+  p.
+    The power of arrays never fails to impress.
+    It's literally just juxtaposing things together.
+    Sounds like something a stupid caveman would do.
+    @[grug Grug programmer] slaps things together
+    into arrays while the refined gentleman weaves
+    linked lists with grace and finesse. _(Yet it's
+    arrays) which the processor likes, and it's arrays
+    that the computer science validates as the good
+    solution to this problem. Go figure. It almost
+    makes me want to use arrays for literally everything.
+
+  p.
+    Can I do that?
+    Use one big stupid flat array
+    for literally everything?
+    Is it even possible?
+
+  h2 The tyranny of the pointers
+
+  p.
+    The trouble with these arrays is precisely the fact
+    they're big stupid monolithic chunks of objects.
+    Can't easily insert new values in the middle of
+    chunks, that would require resizing the array.
+    Easier to just put them into a linked list
+    and call it a day. That way if more storage
+    is needed one can just allocate new chunks
+    and link them in, and if the entire
+    chunk becomes dead one can just link
+    them out and deallocate the chunks.
+    The insertion performance of linked lists
+    combined with the awesomeness of arrays.
+    This must be what peak performance looks like.
+
+  p.
+    But why is that, anyway? Why is it impossible
+    to easily resize these arrays? Things would be
+    _(so much easier) if we could do that...
+
+  p.
+    I kept thinking about it, then I realized
+    there was no such thing as "resizing"
+    an array to begin with. That was an
+    abstraction, a fantasy. In reality,
+    a completely new array gets allocated,
+    the old data gets copied over, and then
+    the old array gets destroyed. That's what
+    array "resizing" actually is.
+    It's destructive reconstruction.
+    Like wars and the economy.
+
+  p.
+    A completely new array is allocated every single time.
+    This array could be in a totally different location.
+    *(This invalidates all pointers into the array.)
+    All lone lisp objects are pointers to heap values
+    inside these arrays. Resizing them would dangle
+    every pointer to the values inside them.
+    *(It would be pure chaos.)
+
+  aside.
+    OK, not _(every single time). Allocators _(might)
+    be clever enough to expand the array in place
+    _(if) there is enough space to do so.
+    They cannot, however, guarantee this.
+    So I pretend it never happens.
+    Better to be pleasantly surprised
+    than disappointed.
+
+  p.
+    Such is the tyranny of the pointers.
+    They are lazy and unmoving, eternally
+    fixed in place, utterly unconcerned
+    about the evolution of the world around
+    them. They are the ?(NIMBY Not In My
+    Back Yard)s of the programming world.
+    Entire new edifices of memory are getting
+    built all around them, yet they do not react.
+    They do nothing but drag their feet and remain
+    where they are until the world ends, forcing
+    the rest of the world to adapt to them instead.
+    Yes, it is clear to me now. _(Someone) would have
+    to do _(something) about all of these pointers.
+
+  p.
+    But what exactly should be done about them?
+    Pointers aren't gonna change. Not for me,
+    not for you, not for anyone tonight.
+    If anything was going to change,
+    it was going to have to be the world.
+    Could I change the world?
+
+  p.
+    What if the values... Weren't pointers to begin with?
+    What if they were just... Numbers? Indexes into the array?
+    Easier said than done. Like many lisps before it,
+    lone used a @[tp tagged pointer] representation.
+    In lisp, _(everything) is ~(kung fu) @[kragen pointers].
+    Such a fundamental change would touch *(everything)
+    in the interpreter.
+
+  p.
+    @[conversion3 Did it anyway.] Rewrote the entire value
+    representation. Mercifully, it had already been
+    @[heap_value_of abstracted away] into nice functions
+    and structures by this point. This was not @[conversion1
+    the first time] it was rewritten, or even @[conversion2
+    the second]. Won't be the last time either. Mark my words.
+
+  p.
+    So now lone values are no longer pointers, they are _(indexes)
+    into the lone value heap. Yes, *(the) lone heap. Singular.
+    @[linearization The linked lists are gone now.]
+
+  +code
+    :prismjs(language=c)
+      struct lone_lisp_heap_value *
+      lone_lisp_heap_value_of(struct lone_lisp *lone, struct lone_lisp_value value)
+      {
+          size_t index = /* get the index out of the value */;
+
+          return &lone->heap.values[index];
+      }
+
+  p.
+    The heap is literally just a big dumb flat array
+    of values now. A black monolith. An absolute unit.
+    Lone values simply index into this array.
+    The array could be anywhere in memory,
+    it doesn't matter where it is.
+    The real pointers are simply
+    calculated on the fly.
+
+  aside.
+    Technically, every lone lisp value is now a heap base pointer
+    plus index pair. The base pointer is implicit in the interpreter
+    structure that's threaded through every single function.
+    Code only manipulates the position-independent indexes.
+
+  p.
+    Values are now independent of their position in memory.
+    Lone can now fearlessly reallocate, move and resize the heap.
+
+  h2 `(mremap)
+
+  p.
+    A lot of things are falling into place here all at once.
+
+  p.
+    Position independent values. One big dumb array of values.
+    Why not just... Memory map this array as a huge page?
+    Lone's heap values are currently 56 bytes. Let's bump that
+    up a bit by aligning it to 64 bytes. This means they will
+    never ever overlap page boundaries, no matter what page
+    size Linux uses. And would you look at that... 64 bytes
+    just happen to be exactly one cache line.
+
+  p.
+    Lone's heap is made out of _(pages) now. It is literally
+    just pages and pages and more pages, all filled to the brim
+    with lisp values. From byte allocation to value allocation
+    to page allocation. Not bad...
+
+  +code
+    :prismjs(language=c)
+      void lone_lisp_heap_initialize(struct lone_lisp *lone)
+      {
+          size_t size = LONE_LISP_HEAP_CAPACITY
+                      * sizeof(struct lone_lisp_heap_value);
+
+          lone->heap.values = linux_mmap(0, size,
+                                         PROT_READ   | PROT_WRITE,
+                                         MAP_PRIVATE | MAP_ANONYMOUS,
+                                         -1, 0);
+
+          lone->heap.count = 0;
+          lone->heap.capacity = LONE_LISP_HEAP_CAPACITY;
+      }
+
+  p.
+    `(mmap) is awesome but Linux's got something
+    _(even more) awesome: `(mremap), which makes
+    it almost trivial to manage the page-based heap.
+    The kernel can restructure page tables at will,
+    which means it can move the entire lone heap
+    without copying anything! @[mremap.2 The man page]
+    wasn't kidding about the fact that it could be used
+    to implement a very efficient `(realloc).
+
+  +code
+    :prismjs(language=c)
+      static void lone_lisp_heap_grow(struct lone_lisp *lone)
+      {
+          size_t old_capacity, new_capacity,
+                 old_size,     new_size;
+
+          old_capacity = lone->heap.capacity;
+          old_size = old_capacity * sizeof(struct lone_lisp_heap_value);
+
+          new_capacity = old_capacity * 2;
+          new_size = new_capacity * sizeof(struct lone_lisp_heap_value);
+
+          lone->heap.values = linux_mremap(lone->heap.values,
+                                           old_size, new_size,
+                                           MREMAP_MAYMOVE);
+
+          lone->heap.capacity = new_capacity;
+      }
+
+  h2 The lone heap
+
+  p.
+    From nothing to a specialized `(mremap)pable
+    cache friendly heap of lone lisp values.
+    Not bad for a homegrown programming language.
+
+  p.
+    It's still linearly scanning for dead values
+    to resurrect though. Starts from the beginning
+    every single time. It has to. The garbage
+    collector could theoretically choose to
+    assassinate any object in the program,
+    including the one at index zero.
+    It can't assume that the zeroth
+    object will always be alive.
+
+  p Right?
+
+
+references
+  lone          https://github.com/lone-lang/lone lone
+  gc            /articles/babys-second-garbage-collector
+  aq            https://accidentallyquadratic.tumblr.com/
+  tp            https://en.wikipedia.org/wiki/Tagged_pointer
+  grug          https://grugbrain.dev/
+  kragen        http://canonical.org/~kragen/memory-models/
+  mremap.2      https://www.man7.org/linux/man-pages/man2/mremap.2.html
+  conversion1   https://github.com/lone-lang/lone/commit/46cb650e6ea0d6521fd4eabddea466f5ce711d76
+  conversion2   https://github.com/lone-lang/lone/commit/540f49f6133e95b539e5485b315851fbb12988df
+  conversion3   https://github.com/lone-lang/lone/commit/a9bede7173f495887da9eca4c41784b40737f342
+  heap_value_of https://github.com/lone-lang/lone/commit/ee6343534344020ffd3eaa630f2126456602fb93
+  linearization https://github.com/lone-lang/lone/commit/492ae6b3da2396832a3c7b4c0fe6d9997c3e4814
+  1st           https://github.com/lone-lang/lone/blob/935743f8cadca948b4a3bce5d1aaf1034df0400b/source/lone/lisp/heap.c
