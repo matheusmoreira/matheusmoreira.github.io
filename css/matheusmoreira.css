@@ -1,6 +1,6 @@
 body {
   --color-white: hsl(0 0% 90%);
-  --color-amber: hsl(30deg 80% 60%);
+  --color-cyan:  hsl(195deg 75% 65%);
   --color-green: hsl(156deg 80% 45%);
   --color-night: hsl(200deg 100% 5%);
 
@@ -8,7 +8,7 @@ body {
   --border-color: var(--color-green);
   --text-color: var(--color-white);
   --nav-color: var(--color-white);
-  --heading-color: var(--color-amber);
+  --heading-color: var(--color-cyan);
   --link-color: var(--color-green);
 
   --sans-serif-font: "Noto Sans", sans-serif;
