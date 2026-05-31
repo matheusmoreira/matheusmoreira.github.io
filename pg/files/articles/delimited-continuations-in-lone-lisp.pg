@@ -339,42 +339,6 @@ block article
           machine->step = LONE_LISP_MACHINE_STEP_APPLICATION;
           /* ... */
 
-  aside
-    p.
-      What's with all these steps?
-      They're just numbers representing
-      what the machine's NeXTSTEP is.
-      The machine is simply switching on
-      the `(step) variable every cycle.
-    p.
-      By directly setting this variable
-      and associated registers, the machine
-      can be explicitly configured to do
-      some specific action.
-    p.
-      Steps can also be pushed on the stack.
-      The machine expects to be told what
-      the next step is at certain key points.
-      This is accomplished by popping a step
-      off the stack directly into the step
-      register. Through this method, the machine
-      can be rigged to do something _(after)
-      it finishes doing whatever it was directly
-      configured to do via the above method.
-
-    +code
-      :prismjs(language=c)
-        enum lone_lisp_machine_step {
-            LONE_LISP_MACHINE_STEP_HALT,
-            LONE_LISP_MACHINE_STEP_EXPRESSION_EVALUATION,
-            LONE_LISP_MACHINE_STEP_EVALUATED_OPERATOR,
-            LONE_LISP_MACHINE_STEP_OPERAND_EVALUATION,
-            LONE_LISP_MACHINE_STEP_OPERAND_ACCUMULATION,
-            LONE_LISP_MACHINE_STEP_LAST_OPERAND_ACCUMULATION,
-            LONE_LISP_MACHINE_STEP_APPLICATION,
-            /* ... */
-        };
-
   p.
     The next step is to actually apply
     the arguments to the function.
@@ -454,6 +418,43 @@ block article
     just to expose the lisp stack so that I could
     manipulate it, I end up in this sorry situation
     where lisp calls C which calls lisp again.
+
+  aside
+    p.
+      What's with all these steps?
+      They're just numbers representing
+      what the machine's NeXTSTEP is.
+      The machine is simply switching on
+      the `(step) variable every cycle.
+    p.
+      By directly setting this variable
+      and associated registers, the machine
+      can be explicitly configured to do
+      some specific action.
+    p.
+      Steps can also be pushed on the stack.
+      The machine expects to be told what
+      the next step is at certain key points.
+      This is accomplished by popping a step
+      off the stack directly into the step
+      register. Through this method, the machine
+      can be rigged to do something _(after)
+      it finishes doing whatever it was directly
+      configured to do via the above method.
+
+    +code
+      :prismjs(language=c)
+        enum lone_lisp_machine_step {
+            LONE_LISP_MACHINE_STEP_HALT,
+            LONE_LISP_MACHINE_STEP_EXPRESSION_EVALUATION,
+            LONE_LISP_MACHINE_STEP_EVALUATED_OPERATOR,
+            LONE_LISP_MACHINE_STEP_OPERAND_EVALUATION,
+            LONE_LISP_MACHINE_STEP_OPERAND_ACCUMULATION,
+            LONE_LISP_MACHINE_STEP_LAST_OPERAND_ACCUMULATION,
+            LONE_LISP_MACHINE_STEP_APPLICATION,
+            /* ... */
+        };
+
   p.
     Clearly, the primitives cannot be allowed
     to recurse back into the machine...
