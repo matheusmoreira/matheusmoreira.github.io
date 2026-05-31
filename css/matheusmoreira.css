@@ -130,6 +130,33 @@ aside {
   margin: 1ch;
   border: 2px solid var(--border-color);
   padding: 1ch;
+  max-height: 20em;
+  overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) transparent;
+
+  /* Scroll shadows: a border-colored gradient hints at more content that way.
+   * The night "covers" are glued to the content (background-attachment: local)
+   * and ride with it. The green "cues" are pinned to the box edges (scroll).
+   * A cover hides its cue while that edge is flush with the content,
+   * so a cue only shows when there's overflow to scroll. Content that fits
+   * shows no glow. Lea Verou's trick, inverted for a dark theme.
+   */
+  background-image:
+    linear-gradient(var(--background-color) 40%, transparent),    /* top    cover */
+    linear-gradient(transparent, var(--background-color) 60%),    /* bottom cover */
+    linear-gradient(to bottom, var(--border-color), transparent), /* top    cue   */
+    linear-gradient(to top, var(--border-color), transparent);    /* bottom cue   */
+
+  /* Width stays 100%. All heights: covers 2.5em, cues 0.75em.
+   * The 40%/60% solid stops above are a fraction of the cover height:
+   * 40% of 2.5em = 1em of solid mask. They must stay >= the 0.75em cue.
+   * If this constraint is not satisfied, the gradient leaks through at rest.
+   */
+  background-size: 100% 2.5em, 100% 2.5em, 100% 0.75em, 100% 0.75em;
+  background-position: top, bottom, top, bottom;
+  background-repeat: no-repeat;
+  background-attachment: local, local, scroll, scroll;
 }
 
 aside p:first-child {
