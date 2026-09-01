@@ -1,9 +1,10 @@
 {
+  "name": "matheusmoreira.com",
   "dependencies": {
-    "prettier": "^3.0.3",
-    "pugneum": "1.2.0",
-    "pugneum-feed": "1.0.2",
-    "pugneum-filter-prismjs": "1.1.0",
-    "pugneum-mixins": "1.0.0"
+    "prettier": "^3.9.6",
+    "pugneum": "2.0.0",
+    "pugneum-feed": "1.0.3",
+    "pugneum-filter-prismjs": "1.1.1",
+    "pugneum-mixins": "2.0.0"
   }
 }
