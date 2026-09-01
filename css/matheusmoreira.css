@@ -122,6 +122,48 @@ a {
   color: var(--link-color);
 }
 
+table {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-size: 75%;
+}
+
+table caption {
+  caption-side: bottom;
+  margin: 0.25em 0 0.75em;
+  color: var(--heading-color);
+  font-size: 75%;
+  font-weight: bold;
+  line-height: 1.25;
+  text-align: center;
+  white-space: nowrap;
+}
+
+table th,
+table td {
+  padding: 0.5ch 1ch;
+  border: 1px solid var(--border-color);
+  text-align: left;
+  vertical-align: top;
+}
+
+table .number {
+  text-align: right;
+  white-space: nowrap;
+}
+
+table td.bar {
+  background-image: linear-gradient(
+    to right,
+    hsl(156deg 80% 45% / 18%) 0 var(--bar),
+    transparent var(--bar) 100%
+  );
+}
+
 aside {
   float: right;
   clear: right;
