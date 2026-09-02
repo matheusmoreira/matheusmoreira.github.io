@@ -1,0 +1,7 @@
+mixin data-table(id)
+  figure(tabindex='0')
+    table(id="#{id}" aria-labelledby="#{id}-caption")
+      block
+    given caption
+      figcaption(id="#{id}-caption")
+        block caption

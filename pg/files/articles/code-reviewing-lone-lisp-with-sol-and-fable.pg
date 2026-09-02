@@ -99,8 +99,9 @@ block article
     and I had started to wonder if it was
     really as good as Fable... Let's see!
 
-  table#code-review-scale
-    caption Scale of the Sol and Fable code reviews
+  +data-table(code-review-scale)
+    block caption
+      | Scale of the Sol and Fable code reviews
     thead
       tr
         th(scope='col') Reviewer
@@ -157,8 +158,9 @@ block article
     from various perspectives. Twelve were used
     during this review.
 
-  table#review-lenses
-    caption The 12 review lenses
+  +data-table(review-lenses)
+    block caption
+      | The 12 review lenses
     thead
       tr
         th(scope='col') Critic lens
@@ -211,8 +213,9 @@ block article
     review. This limits the scope and keeps context
     manageable.
 
-  table#lone-lisp-subdivision
-    caption Lone lisp subdivided into 21 subsystems
+  +data-table(lone-lisp-subdivision)
+    block caption
+      | Lone lisp subdivided into 21 subsystems
     thead
       tr
         th(scope='col') Subsystem
@@ -344,10 +347,11 @@ block article
     recommendations and 5 documentation findings from
     the tables. This left me with 153 unique defects.
 
-  table#findings-by-severity
-    caption.
-      Maximum code review severity among 153 unique defects
-      derived from `(HIGH)/`(CRITICAL) findings
+  +data-table(findings-by-severity)
+    block caption
+      span.
+        Maximum code review severity among 153 unique defects
+        derived from `(HIGH)/`(CRITICAL) findings
     thead
       tr
         th(scope='col') Severity
@@ -401,11 +405,12 @@ block article
     How many defects were found by both models?
     How many were unique to each model?
 
-  table#finding-overlap
-    caption.
-      Overlap among 153 unique defects
-      derived from `(HIGH)/`(CRITICAL)
-      findings
+  +data-table(finding-overlap)
+    block caption
+      span.
+        Overlap among 153 unique defects
+        derived from `(HIGH)/`(CRITICAL)
+        findings
     thead
       tr
         th(scope='col') Found by
@@ -438,8 +443,9 @@ block article
     against the 106 pre-existing issues on the list, all of
     which were still present in the source code.
 
-  table#known-issue-rediscovery
-    caption Rediscovery of 106 pre-existing and live issues
+  +data-table(known-issue-rediscovery)
+    block caption
+      | Rediscovery of 106 pre-existing and live issues
     thead
       tr
         th(scope='col') Rediscovered by
@@ -480,8 +486,9 @@ block article
     reviews mostly worked, but robustness reviews
     hit walls _(immediately).
 
-  table#defensive-review-outcomes
-    caption First-attempt outcomes for defensive reviews
+  +data-table(defensive-review-outcomes)
+    block caption
+      | First-attempt outcomes for defensive reviews
     thead
       tr
         th(scope='col') Model
@@ -546,8 +553,9 @@ block article
     702 attempts and 36 cybersecurity blocks across
     Sol's 257 attempts, including their retries.
 
-  table#blocks-by-lens
-    caption Cybersecurity events in attempts by review lens
+  +data-table(blocks-by-lens)
+    block caption
+      | Cybersecurity events in attempts by review lens
     thead
       tr
         th(scope='col') Lens
@@ -608,8 +616,9 @@ block article
     and `(rigor) is highly disappointing, since
     these are the most valuable code reviewers.
 
-  table#blocks-by-subsystem
-    caption Cybersecurity events in attempts by subsystem
+  +data-table(blocks-by-subsystem)
+    block caption
+      | Cybersecurity events in attempts by subsystem
     thead
       tr
         th(scope='col') Subsystem

@@ -123,24 +123,33 @@ a {
 }
 
 table {
-  display: block;
-  width: fit-content;
-  max-width: 100%;
   margin-inline: auto;
-  overflow-x: auto;
   border-collapse: collapse;
   font-size: 75%;
 }
 
-table caption {
-  caption-side: bottom;
+figure:has(> table) {
+  width: fit-content;
+  max-width: 100%;
+  margin-block: 0;
+  margin-inline: auto;
+  overflow-x: auto;
+}
+
+figure > table {
+  width: 100%;
+}
+
+figure > figcaption {
+  width: 100%;
+  box-sizing: border-box;
   margin: 0.25em 0 0.75em;
   color: var(--heading-color);
   font-size: 75%;
   font-weight: bold;
   line-height: 1.25;
   text-align: center;
-  white-space: nowrap;
+  white-space: normal;
 }
 
 table th,

@@ -1,5 +1,7 @@
 extends /templates/master.pg
 
+include /mixins/table.pg
+
 block body
   article
     block article
