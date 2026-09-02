@@ -8,6 +8,8 @@ block body
   h1 Articles
   nav
     ol#index
+      li(data-published-at="2026-09-02")
+        a(href='/articles/code-reviewing-lone-lisp-with-sol-and-fable') Code reviewing lone lisp with Sol and Fable
       li(data-published-at="2026-05-28")
         a(href=/articles/lone-lisp-heap) The lone lisp heap
       li(data-published-at="2026-04-01")

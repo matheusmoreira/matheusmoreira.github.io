@@ -1,0 +1,784 @@
+extends /templates/code-article.pg
+
+append head
+  title Code reviewing lone lisp with Sol and Fable
+  meta(name=description content='Comparative code review of the lone lisp interpreter source code by Sol and Fable.')
+  meta(name=keywords content='ai, review, code review, benchmark, claude, fable, gpt-5.6, sol, lone lisp')
+
+block article
+
+  h1 Code reviewing lone lisp with Sol and Fable
+
+  p.
+    I've been a solo programmer for over ten years.
+    It is so wonderful to be able to work on my own
+    projects with no pressure of any kind, and just
+    make real the things I envision with my mind.
+    It's always been a recreational, even spiritual,
+    activity for me.
+
+  p.
+    I definitely feel the isolation though.
+    Writing code for no one in particular,
+    just for myself. Never following anyone
+    else's standards. Never knowing what my
+    peers thought. Did I even have peers?
+
+  p.
+    LLMs changed that.
+
+  p.
+    I paid for my Anthropic subscription
+    in early 2026. Chose Anthropic just
+    because I had vaguely heard it was
+    the more ethical of the AI companies.
+    The first thing I did was connect my
+    GitHub account and synchronize all my
+    repositories, then ask Claude Opus 4.6
+    for a full code review of @[lone].
+    I was immediately impressed, and
+    code review became a mainstay of
+    my hobby software development
+    ever since. I had a coding buddy
+    now.
+
+  h2 The ultimate code review
+
+  p.
+    Anthropic had already released its newest, most powerful
+    model, Claude Mythos Preview, as far back as April this
+    year. Only a few "trusted" corporations and institutions
+    were given access at first, and peasants such as myself
+    needed not apply.
+
+  p.
+    A version of Mythos called Fable
+    @[fable-launch was finally released]
+    to the public on #(time(datetime='2026-06-09') June 9th),
+    and I began a complete code review of lone lisp
+    on #(time(datetime='2026-06-10') June 10th),
+    the very next day. I wanted to see
+    what the world's smartest AI model
+    had to say about @[lone].
+
+  p.
+    That was the beginning of the end
+    of my business relationship with
+    Anthropic. @[fable] launched with
+    incredibly obnoxious safeguards
+    that added enormous friction.
+    It'd often downgrade to Opus
+    while reviewing lone, especially
+    the parts that needed it the most!
+    In spite of these safeguards, the US
+    government @[fable-suspension imposed export controls]
+    on #(time(datetime='2026-06-12') June 12th),
+    causing Anthropic to suspend access.
+    @[fable-redeployment Service was only restored]
+    on #(time(datetime='2026-07-01') July 1st).
+
+  p.
+    Anthropic is extremely stingy with Fable.
+    There is a separate meter for it, and on
+    subscriptions it has higher multipliers
+    compared to API prices. One 5h code review
+    window would take out 10% of my weekly
+    quota, and that's the happy path where
+    Fable wouldn't downgrade to Opus.
+
+  p.
+    I nevertheless slogged through this review
+    out of sheer stubbornness. It took _(over
+    a month) to complete this code review!
+    My subscription ended just in time...
+
+  p.
+    Subscribed to OpenAI that same day,
+    and the grass turned out to be much
+    greener here. @[sol] had just come out,
+    and I had started to wonder if it was
+    really as good as Fable... Let's see!
+
+  table#code-review-scale
+    caption Scale of the Sol and Fable code reviews
+    thead
+      tr
+        th(scope='col') Reviewer
+        th.number(scope='col') Agent invocations
+        th.number(scope='col') Agent-hours
+        th.number(scope='col') Input tokens
+        th.number(scope='col') Output tokens
+        th.number(scope='col') API-equivalent cost
+    tbody
+      tr
+        td Fable
+        td.number 702
+        td.number 66.271
+        td.number 635,263,296
+        td.number 14,216,818
+        td.number $1,757.80
+      tr
+        td Sol
+        td.number 257
+        td.number 46.526
+        td.number 773,216,978
+        td.number 5,366,778
+        td.number $523.32
+      tr
+        td Both
+        td.number 959
+        td.number 112.797
+        td.number 1,408,480,274
+        td.number 19,583,596
+        td.number $2,281.12
+
+  p.
+    Fable's invocation numbers are higher due to
+    Anthropic's very low usage limits, as well as
+    cybersecurity blocks and their associated retries.
+
+  p.
+    It costs two thousand two hundred dollars
+    to review lone lisp... For twelve weeks.
+
+  p.
+    Thank god we have subscriptions.
+
+  h2 The review skill
+
+  p.
+    I used my own @[scrutinize `(scrutinize)]
+    parallel code review skill which works by
+    applying "critics" to "subsystems".
+
+  p.
+    The skill currently defines fourteen "critics",
+    which are agent personas that review the code
+    from various perspectives. Twelve were used
+    during this review.
+
+  table#review-lenses
+    caption The 12 review lenses
+    thead
+      tr
+        th(scope='col') Critic lens
+        th(scope='col') Driving question
+    tbody
+      tr
+        td `(quality)
+        td How high quality is this, in general?
+      tr
+        td `(correctness)
+        td Is this implemented correctly?
+      tr
+        td `(rigor)
+        td Is this the real, complete fix? Or is it a hack?
+      tr
+        td `(integration)
+        td Does this work well with everything else?
+      tr
+        td `(design)
+        td Is this the right way to implement it?
+      tr
+        td `(consistency)
+        td Does this follow the codebase's established conventions?
+      tr
+        td `(maintainability)
+        td Will this remain understandable and changeable over time?
+      tr
+        td `(duplication)
+        td Are things repeating themselves needlessly?
+      tr
+        td `(performance)
+        td.
+          Is it efficient? Does it use optimal
+          algorithms and data structures?
+      tr
+        td `(tests)
+        td Do the tests encode correct behavior and catch real failures?
+      tr
+        td `(security)
+        td Can untrusted input provoke unintended behavior?
+      tr
+        td `(robustness)
+        td.
+          Do hostile or extreme inputs terminate the program,
+          stay bounded or fail early?
+
+  p.
+    The review coordinator explores the repository
+    and subdivides it into subsystems suitable for
+    review. This limits the scope and keeps context
+    manageable.
+
+  table#lone-lisp-subdivision
+    caption Lone lisp subdivided into 21 subsystems
+    thead
+      tr
+        th(scope='col') Subsystem
+        th(scope='col') Responsibility
+    tbody
+      tr
+        td `(architecture)
+        td Entry points and raw system call ABI functions
+      tr
+        td `(c-tests-lisp)
+        td C tests of tagged Lisp values and constants
+      tr
+        td `(c-tests-reader-primitives)
+        td C tests of the reader and low level primitives
+      tr
+        td `(module-text)
+        td Intrinsic text operations
+      tr
+        td `(modules-lone)
+        td Core-language intrinsic primitives
+      tr
+        td `(modules-math-list)
+        td Arithmetic and list intrinsics
+      tr
+        td `(stack-bits-types)
+        td Generic stack, bitmaps, endian types and Unicode
+      tr
+        td `(system-foundation)
+        td Process startup, Linux, memory allocator and randomness
+      tr
+        td `(test-framework)
+        td C test results and assertion framework
+      tr
+        td `(module-bytes)
+        td Mutable and frozen byte buffer intrinsics
+      tr
+        td `(build-scripts)
+        td Makefile, system call generation and test harness
+      tr
+        td `(modules-vector-table)
+        td Vector and table intrinsics
+      tr
+        td `(hash-elf)
+        td Hashing and ELF parsing
+      tr
+        td `(gc)
+        td.
+          Garbage collector that marks, sweeps, compacts
+          and spills registers
+      tr
+        td `(lisp-types)
+        td Tagged types, the heap, value hashing and utilities
+      tr
+        td `(lisp-values)
+        td Concrete heap value implementations of each lisp type
+      tr
+        td `(module-linux)
+        td Linux `(system-call) intrinsics and process data
+      tr
+        td `(reader-printer)
+        td The lisp parser and printer
+      tr
+        td `(machine)
+        td The virtual lisp machine
+      tr
+        td `(module-system)
+        td.
+          Module system, module loading, `(import),
+          embedded modules, intrinsic module initialization
+      tr
+        td `(lone-embed)
+        td Custom made ELF patcher tool
+
+  p.
+    12 critics multiplied by 21 subsystems
+    results in a 252 cell code review matrix.
+    Multiplied by the two frontier models,
+    the result is 504 individual review cells.
+    It's not exactly a controlled experiment,
+    but I think it still turned out pretty good.
+
+  p.
+    All reviewers go in blind with no prior
+    context outside of their prompts.
+    No list of known issues is provided.
+
+  p.
+    Agents run in parallel and commit their findings
+    into an orphan `(ai) branch in the git repository.
+    This _(easily) burns even the most generous token
+    allowances!
+
+  p.
+    A filesystem journal style algorithm
+    was used to deal with the interruptions
+    caused by the five hour limits: agents
+    would keep a journal and redo operations
+    that got interrupted and didn't complete.
+    To deal with safety lockouts, the skill
+    also encoded a GNU ddrescue style algorithm:
+    complete all easy cells first, then scrape
+    any blocked cells by retrying with modified
+    prompts until they succeed. This squeezed
+    every last drop of juice out of Fable even
+    in spite of Anthropic's safety classifiers.
+
+  p.
+    These agents produced _(a lot) of output. One finding
+    can contain several problems, and multiple agents can
+    find the same issues independently. When done, the review
+    coordinator goes through the findings and semantically
+    splits and deduplicates them all. Multiple independent
+    findings increase confidence. Agents classify the severity
+    of findings and then results converge into what's essentially
+    a titanic TODO list of issues.
+
+  p.
+    It's these results that I'm going to use as a measure
+    of the performance of Sol and Fable.
+
+  h2 The results
+
+  p.
+    The agents produced 538 `(HIGH)/`(CRITICAL) findings
+    which were split into 637 atomic claims and further
+    deduplicated into 232 unique semantic items, one of
+    which was later rejected. I excluded 63 missing
+    test findings, 10 maintainability or duplication
+    recommendations and 5 documentation findings from
+    the tables. This left me with 153 unique defects.
+
+  table#findings-by-severity
+    caption.
+      Maximum code review severity among 153 unique defects
+      derived from `(HIGH)/`(CRITICAL) findings
+    thead
+      tr
+        th(scope='col') Severity
+        th.number(scope='col') Fable
+        th.number(scope='col') Sol
+    tbody
+      tr
+        td `(CRITICAL)
+        td.number 4
+        td.number 3
+      tr
+        td `(HIGH)
+        td.number 66
+        td.number 126
+      tr
+        td `(MEDIUM)
+        td.number 25
+        td.number 12
+      tr
+        td `(LOW)
+        td.number 18
+        td.number 1
+      tr
+        td `(WARNING)
+        td.number 1
+        td.number 1
+      tr
+        td `(INFO)
+        td.number 4
+        td.number 0
+      tr
+        td Unspecified
+        td.number 1
+        td.number 0
+      tr
+        td Total
+        td.number 119
+        td.number 143
+
+  p.
+    Sol found all four unique defects that Fable classified
+    as `(CRITICAL). It just happened to classify two of them
+    as `(HIGH) instead. Conversely, Fable also found defects
+    that Sol classified as `(CRITICAL), but classified one of
+    them as `(LOW). Their union contains five unique defects,
+    all shared between both code reviews.
+
+  h3 Semantic overlap
+
+  p.
+    How many defects were found by both models?
+    How many were unique to each model?
+
+  table#finding-overlap
+    caption.
+      Overlap among 153 unique defects
+      derived from `(HIGH)/`(CRITICAL)
+      findings
+    thead
+      tr
+        th(scope='col') Found by
+        th.number(scope='col') Defects
+    tbody
+      tr
+        td Fable only
+        td.number 10
+      tr
+        td Sol only
+        td.number 34
+      tr
+        td Fable ∩ Sol
+        td.number 109
+      tr
+        td Fable ∪ Sol
+        td.number 153
+
+  p.
+    Sol corroborated 109 of Fable's 119 defects, or 91.60%,
+    but missed 10. Fable corroborated 109 of Sol's 143 defects,
+    or 76.22%, but missed 34.
+
+  h3 Known issues rediscovered
+
+  p.
+    The project already had an independent list of known
+    issues before either code review. Neither model saw it.
+    After the review was completed, I compared the findings
+    against the 106 pre-existing issues on the list, all of
+    which were still present in the source code.
+
+  table#known-issue-rediscovery
+    caption Rediscovery of 106 pre-existing and live issues
+    thead
+      tr
+        th(scope='col') Rediscovered by
+        th.number(scope='col') Known issues
+    tbody
+      tr
+        td Fable ∩ Sol
+        td.number.bar(style='--bar: 72.64%') 77
+      tr
+        td Fable ∪ Sol
+        td.number.bar(style='--bar: 91.51%') 97
+      tr
+        td Fable
+        td.number.bar(style='--bar: 83.96%') 89
+      tr
+        td Sol
+        td.number.bar(style='--bar: 80.19%') 85
+      tr
+        td Fable only
+        td.number.bar(style='--bar: 11.32%') 12
+      tr
+        td Sol only
+        td.number.bar(style='--bar: 7.55%') 8
+      tr
+        td Neither model
+        td.number.bar(style='--bar: 8.49%') 9
+
+  p.
+    The observed differences were not statistically significant.
+    Paired McNemar test `(p = 0.503).
+
+  h3 The grass wasn't always greener
+
+  p.
+    Anthropic became famous for its incredibly
+    sensitive Fable safety classifier, but OpenAI
+    turned out to not be much better. Security
+    reviews mostly worked, but robustness reviews
+    hit walls _(immediately).
+
+  table#defensive-review-outcomes
+    caption First-attempt outcomes for defensive reviews
+    thead
+      tr
+        th(scope='col') Model
+        th(scope='col') Lens
+        th.number(scope='col') Complete
+        th.number(scope='col') Cybersecurity block
+        th.number(scope='col') General unavailability
+    tbody
+      tr
+        td Fable
+        td Security
+        td.number.bar(style='--bar: 52.38%') 11/21
+        td.number.bar(style='--bar: 14.29%') 3/21
+        td.number.bar(style='--bar: 33.33%') 7/21
+      tr
+        td Fable
+        td Robustness
+        td.number.bar(style='--bar: 66.67%') 14/21
+        td.number.bar(style='--bar: 23.81%') 5/21
+        td.number.bar(style='--bar: 9.52%') 2/21
+      tr
+        td Sol
+        td Security
+        td.number.bar(style='--bar: 80.95%') 17/21
+        td.number.bar(style='--bar: 19.05%') 4/21
+        td.number.bar(style='--bar: 0%') 0/21
+      tr
+        td Sol
+        td Robustness
+        td.number.bar(style='--bar: 4.76%') 1/21
+        td.number.bar(style='--bar: 95.24%') 20/21
+        td.number.bar(style='--bar: 0%') 0/21
+
+  p.
+    For Fable, a cybersecurity failure is inferred
+    from downgrades to Opus. The skill directs the
+    model to detect this and abort rather than
+    continue reviewing with a weaker model.
+    For Sol, it is a `(cyber_policy) termination.
+    General unavailability comprises usage exhaustion,
+    timeouts and overloaded compute capacity.
+
+  p.
+    The security/robustness prompts already differed initially,
+    and diverged further during the code review due to retries.
+    Both models eventually produced finished review output for
+    all 42 defensive code review cells after enough retries.
+    Exploit vocabulary had to be beaten out of the models as
+    though the words were unforgivable wrongthink. This means
+    the reports were less directly comparable, but the first
+    attempt table is still a good measure of how much friction
+    these safeguards add.
+
+  p.
+    These 42 defensive assignments were only one sixth
+    of the review matrix, but produced 24 of OpenAI's
+    36 `(cyber_policy) blocks: exactly two thirds.
+
+  p.
+    They weren't the only ones though. There were,
+    in total, 50 downgrade events across Fable's
+    702 attempts and 36 cybersecurity blocks across
+    Sol's 257 attempts, including their retries.
+
+  table#blocks-by-lens
+    caption Cybersecurity events in attempts by review lens
+    thead
+      tr
+        th(scope='col') Lens
+        th.number(scope='col') Fable downgraded
+        th.number(scope='col') Sol blocked
+    tbody
+      tr
+        td `(quality)
+        td.number.bar(style='--bar: 25%') 5
+        td.number.bar(style='--bar: 5%') 1
+      tr
+        td `(correctness)
+        td.number.bar(style='--bar: 65%') 13
+        td.number.bar(style='--bar: 25%') 5
+      tr
+        td `(rigor)
+        td.number.bar(style='--bar: 30%') 6
+        td.number.bar(style='--bar: 10%') 2
+      tr
+        td `(integration)
+        td.number.bar(style='--bar: 25%') 5
+        td.number.bar(style='--bar: 20%') 4
+      tr
+        td `(design)
+        td.number.bar(style='--bar: 5%') 1
+        td.number.bar(style='--bar: 0%') 0
+      tr
+        td `(consistency)
+        td.number.bar(style='--bar: 5%') 1
+        td.number.bar(style='--bar: 0%') 0
+      tr
+        td `(maintainability)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 0%') 0
+      tr
+        td `(duplication)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 0%') 0
+      tr
+        td `(performance)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 0%') 0
+      tr
+        td `(tests)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 0%') 0
+      tr
+        td `(security)
+        td.number.bar(style='--bar: 45%') 9
+        td.number.bar(style='--bar: 20%') 4
+      tr
+        td `(robustness)
+        td.number.bar(style='--bar: 50%') 10
+        td.number.bar(style='--bar: 100%') 20
+
+  p.
+    The high number of events in `(correctness)
+    and `(rigor) is highly disappointing, since
+    these are the most valuable code reviewers.
+
+  table#blocks-by-subsystem
+    caption Cybersecurity events in attempts by subsystem
+    thead
+      tr
+        th(scope='col') Subsystem
+        th.number(scope='col') Fable downgraded
+        th.number(scope='col') Sol blocked
+    tbody
+      tr
+        td `(architecture)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(c-tests-lisp)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 0%') 0
+      tr
+        td `(c-tests-reader-primitives)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(module-text)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(modules-lone)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 16.67%') 2
+      tr
+        td `(modules-math-list)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(stack-bits-types)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 16.67%') 2
+      tr
+        td `(system-foundation)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(test-framework)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(module-bytes)
+        td.number.bar(style='--bar: 8.33%') 1
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(build-scripts)
+        td.number.bar(style='--bar: 0%') 0
+        td.number.bar(style='--bar: 8.33%') 1
+      tr
+        td `(modules-vector-table)
+        td.number.bar(style='--bar: 8.33%') 1
+        td.number.bar(style='--bar: 16.67%') 2
+      tr
+        td `(hash-elf)
+        td.number.bar(style='--bar: 25%') 3
+        td.number.bar(style='--bar: 25%') 3
+      tr
+        td `(gc)
+        td.number.bar(style='--bar: 33.33%') 4
+        td.number.bar(style='--bar: 25%') 3
+      tr
+        td `(lisp-types)
+        td.number.bar(style='--bar: 33.33%') 4
+        td.number.bar(style='--bar: 25%') 3
+      tr
+        td `(lisp-values)
+        td.number.bar(style='--bar: 33.33%') 4
+        td.number.bar(style='--bar: 16.67%') 2
+      tr
+        td `(module-linux)
+        td.number.bar(style='--bar: 41.67%') 5
+        td.number.bar(style='--bar: 16.67%') 2
+      tr
+        td `(reader-printer)
+        td.number.bar(style='--bar: 25%') 3
+        td.number.bar(style='--bar: 16.67%') 2
+      tr
+        td `(machine)
+        td.number.bar(style='--bar: 50%') 6
+        td.number.bar(style='--bar: 25%') 3
+      tr
+        td `(module-system)
+        td.number.bar(style='--bar: 58.33%') 7
+        td.number.bar(style='--bar: 25%') 3
+      tr
+        td `(lone-embed)
+        td.number.bar(style='--bar: 100%') 12
+        td.number.bar(style='--bar: 8.33%') 1
+
+  p.
+    There were far too many events in important
+    subsystems that include the memory allocator,
+    garbage collector, I/O and module system.
+    Fable especially did not like the ELF patcher.
+
+  h2 Discussion
+
+  p.
+    Fable meticulously catalogues stuff.
+    Sol synthesizes and triages instead.
+    Fable output nearly three times more
+    tokens than Sol, 1,763 versus 1,091
+    entries, as well as 373 versus 78
+    `(INFO)/`(NOTE) observations.
+
+  p.
+    Both found the same critical issues in lone lisp!
+    This is an incredible result, since it suggests
+    OpenAI has extremely competitive performance
+    where it counts at around 30% of the API dollar
+    cost!
+
+  p.
+    Arguably, OpenAI turned out
+    to be just as locked down as
+    Anthropic if not more when it
+    comes to cybersecurity code
+    reviews. Robustness cells were
+    blocked straight up in almost
+    all cases!
+
+  p.
+    Anthropic imposed the larger capacity and orchestration
+    burden overall. OpenAI imposed more blocks on defensive
+    prompts, especially in robustness critics.
+
+  p.
+    Using Fable for defensive cybersecurity was miserable.
+    Anthropic accepted me into their cybersecurity program,
+    but it didn't help at all with my code review work.
+
+  p.
+    Sol is just as difficult to work with.
+    OpenAI tells users to verify their identity
+    and apply to their @[TAC] program. I tried it,
+    but was apparently rejected before any verification.
+    `(cyber_verification_precheck_failed), their servers
+    say. My account is not eligible. No explanations, no
+    appeals, nothing. There were no retries at first,
+    but after a while it started allowing me to verify.
+    I did so, but still failed to get into the program.
+
+  p.
+    Even with all these cybersecurity setbacks,
+    OpenAI is still providing a _(staggering)
+    amount of value with their subscriptions.
+    Their plans are actually honest, and the
+    sheer number of usage resets they're giving
+    out is just insane. My research into other
+    services suggests a Kimi K3 subscription
+    is the best alternative to frontier labs
+    right now: the terms of service are the
+    most reasonable and most friendly to
+    authorized defensive cybersecurity work.
+    Sadly, new subscriptions are paused at
+    the moment. Looks like OpenAI's my home
+    for the foreseeable future.
+
+  p.
+    _(Fabula est acta.)
+
+references
+  lone https://github.com/lone-lang/lone lone lisp
+  fable https://www.anthropic.com/claude/fable Fable
+  fable-launch https://www.anthropic.com/news/claude-fable-5-mythos-5
+  fable-suspension https://www.anthropic.com/news/fable-mythos-access
+  fable-redeployment https://www.anthropic.com/news/redeploying-fable-5
+  sol https://developers.openai.com/api/docs/models/gpt-5.6-sol Sol
+  scrutinize https://github.com/matheusmoreira/.files/tree/master/~/.agents/skills/scrutinize
+  TAC https://chatgpt.com/cyber TAC
