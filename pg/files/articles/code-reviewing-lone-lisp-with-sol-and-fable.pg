@@ -104,33 +104,35 @@ block article
       | Scale of the Sol and Fable code reviews
     thead
       tr
-        th(scope='col') Reviewer
-        th.number(scope='col') Agent invocations
-        th.number(scope='col') Agent-hours
-        th.number(scope='col') Input tokens
-        th.number(scope='col') Output tokens
-        th.number(scope='col') API-equivalent cost
+        th(scope='col')
+        th(scope='col') Fable
+        th(scope='col') Sol
+        th(scope='col') Both
     tbody
       tr
-        td Fable
+        th(scope='row') Agent invocations
         td.number 702
-        td.number 66.271
-        td.number 635,263,296
-        td.number 14,216,818
-        td.number $1,757.80
-      tr
-        td Sol
         td.number 257
-        td.number 46.526
-        td.number 773,216,978
-        td.number 5,366,778
-        td.number $523.32
-      tr
-        td Both
         td.number 959
+      tr
+        th(scope='row') Agent-hours
+        td.number 66.271
+        td.number 46.526
         td.number 112.797
+      tr
+        th(scope='row') Input tokens
+        td.number 635,263,296
+        td.number 773,216,978
         td.number 1,408,480,274
+      tr
+        th(scope='row') Output tokens
+        td.number 14,216,818
+        td.number 5,366,778
         td.number 19,583,596
+      tr
+        th(scope='row') API-equivalent cost
+        td.number $1,757.80
+        td.number $523.32
         td.number $2,281.12
 
   p.
@@ -494,8 +496,8 @@ block article
         th(scope='col') Model
         th(scope='col') Lens
         th.number(scope='col') Complete
-        th.number(scope='col') Cybersecurity block
-        th.number(scope='col') General unavailability
+        th.number(scope='col') Blocked
+        th.number(scope='col') Unavailable
     tbody
       tr
         td Fable
