@@ -150,7 +150,7 @@ figure > figcaption {
   box-sizing: border-box;
   margin: 0.25em 0 0.75em;
   color: var(--heading-color);
-  font-size: 75%;
+  font-size: 60%;
   font-weight: bold;
   line-height: 1.25;
   text-align: center;
